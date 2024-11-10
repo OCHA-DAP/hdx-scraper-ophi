@@ -1,0 +1,24 @@
+datasetinfo:
+  dataset: "global-mpi"
+  format: "xlsx"
+  sheet: "6.4 Harmonised MPI Region"
+  headers:
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+
+hxltags:
+  "country_code": "#country+code"
+  "admin1_code": "#adm1+code"
+  "admin1_name": "#adm1+name"
+  "mpi": "#indicator+mpi"
+  "headcount_ratio": "#indicator+headcount_ratio"
+  "intensity_of_deprivation": "#indicator+intensity_of_deprivation"
+  "vulnerable_to_poverty": "#indicator+vulnerable_to_poverty"
+  "in_severe_poverty": "#indicator+in_severe_poverty"
+  "reference_period_start": "#date+start"
+  "reference_period_end": "#date+end"
+
+resource_description: "This resource contains standardised MPI estimates by admin one unit and also shows the proportion of people who are MPI poor and experience deprivations in each of the indicators by admin one unit. For more detailed but less standardized data on humanitarian needs, see the resource below."
