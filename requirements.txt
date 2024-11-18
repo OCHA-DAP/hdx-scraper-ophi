@@ -44,7 +44,7 @@ frictionless==5.18.0
     # via hdx-python-utilities
 hdx-python-api==6.3.5
     # via hdx-scraper-ophi (pyproject.toml)
-hdx-python-country==3.8.3
+hdx-python-country==3.8.4
     # via
     #   hdx-scraper-ophi (pyproject.toml)
     #   hdx-python-api
@@ -213,7 +213,7 @@ text-unidecode==1.3
     # via python-slugify
 typeguard==4.4.1
     # via inflect
-typer==0.13.0
+typer==0.13.1
     # via frictionless
 typing-extensions==4.12.2
     # via

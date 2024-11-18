@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 lookup = "hdx-scraper-ophi"
 updated_by_script = "HDX Scraper: OPHI"
 
+create_country_datasets = False
 
 def main(
     save: bool = False,
@@ -97,24 +98,25 @@ def main(
             dataset.add_country_locations(list(standardised_countries.keys()))
             update_dataset(dataset)
 
-            for (
-                countryiso3,
-                standardised_country,
-            ) in standardised_countries.items():
-                countryname = Country.get_country_name_from_iso3(countryiso3)
-                standardised_country_trend = standardised_countries_trend.get(
-                    countryiso3
-                )
-                dataset = dataset_generator.generate_dataset(
-                    folder,
-                    standardised_country,
-                    standardised_country_trend,
+            if create_country_datasets:
+                for (
                     countryiso3,
-                    countryname,
-                    date_ranges[countryiso3],
-                )
-                dataset.add_country_location(countryiso3)
-                update_dataset(dataset)
+                    standardised_country,
+                ) in standardised_countries.items():
+                    countryname = Country.get_country_name_from_iso3(countryiso3)
+                    standardised_country_trend = standardised_countries_trend.get(
+                        countryiso3
+                    )
+                    dataset = dataset_generator.generate_dataset(
+                        folder,
+                        standardised_country,
+                        standardised_country_trend,
+                        countryiso3,
+                        countryname,
+                        date_ranges[countryiso3],
+                    )
+                    dataset.add_country_location(countryiso3)
+                    update_dataset(dataset)
 
     logger.info("HDX Scraper OPHI pipeline completed!")
 
