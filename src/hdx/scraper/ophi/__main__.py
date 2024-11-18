@@ -80,7 +80,8 @@ def main(
                 mpi_subnational_path,
                 trend_path,
             )
-            dataset_generator.load_showcase_links(retriever)
+            if create_country_datasets:
+                dataset_generator.load_showcase_links(retriever)
             standardised_global = pipeline.get_standardised_global()
             standardised_global_trend = (
                 pipeline.get_standardised_global_trend()
