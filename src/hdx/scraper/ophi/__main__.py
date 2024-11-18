@@ -27,6 +27,7 @@ updated_by_script = "HDX Scraper: OPHI"
 
 create_country_datasets = False
 
+
 def main(
     save: bool = False,
     use_saved: bool = False,
@@ -103,9 +104,11 @@ def main(
                     countryiso3,
                     standardised_country,
                 ) in standardised_countries.items():
-                    countryname = Country.get_country_name_from_iso3(countryiso3)
-                    standardised_country_trend = standardised_countries_trend.get(
+                    countryname = Country.get_country_name_from_iso3(
                         countryiso3
+                    )
+                    standardised_country_trend = (
+                        standardised_countries_trend.get(countryiso3)
                     )
                     dataset = dataset_generator.generate_dataset(
                         folder,
