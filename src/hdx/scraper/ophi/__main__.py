@@ -69,10 +69,16 @@ def main(
                 downloader, folder, "saved_data", folder, save, use_saved
             )
             pipeline = Pipeline(configuration, retriever)
-            trend_path, mpi_path = pipeline.process()
-            dataset_generator = DatasetGenerator(
-                configuration, trend_path, mpi_path
+            mpi_national_path, mpi_subnational_path, trend_path = (
+                pipeline.process()
             )
+            dataset_generator = DatasetGenerator(
+                configuration,
+                mpi_national_path,
+                mpi_subnational_path,
+                trend_path,
+            )
+            dataset_generator.load_showcase_links(retriever)
             standardised_global = pipeline.get_standardised_global()
             standardised_global_trend = (
                 pipeline.get_standardised_global_trend()

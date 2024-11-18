@@ -1,6 +1,16 @@
 datasetinfo:
-  mpi_and_partial_indices: "https://ophi.org.uk/sites/default/files/2024-10/Table%205%20Subnational%20Results%20MPI%202024.xlsx"
-  trend_over_time: "https://ophi.org.uk/sites/default/files/2024-10/Table%206%20Trends%20Over%20Time%20MPI%202024_3.xlsx"
+  mpi_and_partial_indices:
+    national:
+      url: "https://ophi.org.uk/sites/default/files/2024-10/Table%201%20National%20Results%20MPI%202024.xlsx"
+      sheet: "1.1 National MPI Results"
+    subnational:
+      url: "https://ophi.org.uk/sites/default/files/2024-10/Table%205%20Subnational%20Results%20MPI%202024.xlsx"
+      sheet: "5.1 MPI Region"
+  trend_over_time:
+    url: "https://ophi.org.uk/sites/default/files/2024-10/Table%206%20Trends%20Over%20Time%20MPI%202024_3.xlsx"
+    national_sheet: "6.1 Harmonised MPI"
+    subnational_sheet: "6.4 Harmonised MPI Region"
+
   format: "xlsx"
   headers:
     - 5
@@ -8,8 +18,11 @@ datasetinfo:
     - 7
     - 8
     - 9
-  mpi_sheet: "5.1 MPI Region"
-  trend_sheet: "6.4 Harmonised MPI Region"
+
+showcaseinfo:
+  # https://docs.google.com/spreadsheets/d/1mChJ1UhgLtqLD-hqbFxd5eKq-L7Nz6awD2znBcEkASs/edit?gid=0#gid=0
+  urls: "https://docs.google.com/spreadsheets/d/1mChJ1UhgLtqLD-hqbFxd5eKq-L7Nz6awD2znBcEkASs/export?format=csv&gid=0"
+  notes: "The visual contains sub-national multidimensional poverty data from the country briefs published by the Oxford Poverty and Human Development Initiative (OPHI), University of Oxford."
 
 hxltags:
   "country_code": "#country+code"
@@ -23,6 +36,9 @@ hxltags:
   "reference_period_start": "#date+start"
   "reference_period_end": "#date+end"
 
-resource_description: "This resource contains standardised MPI estimates by admin one unit and also shows the proportion of people who are MPI poor and experience deprivations in each of the indicators by admin one unit."
-trends_resource_description: "This table shows global mpi harmonized level estimates and their changes over time"
-mpi_resource_description: "This table shows the MPI and its partial indices disaggregated by subnational regions"
+resource_descriptions:
+  standardised_mpi: "This resource contains standardised MPI estimates by admin one unit and also shows the proportion of people who are MPI poor and experience deprivations in each of the indicators by admin one unit."
+  standardised_trends: "This resource contains standardised MPI estimates and their changes over time by admin one unit and also shows the proportion of people who are MPI poor and experience deprivations in each of the indicators by admin one unit."
+  mpi_national: "This table shows the MPI and its partial indices"
+  mpi_subnational: "This table shows the MPI and its partial indices disaggregated by subnational regions"
+  trends: "This table shows global mpi harmonized level estimates and their changes over time"

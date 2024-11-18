@@ -7,19 +7,49 @@ from slugify import slugify
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
+from hdx.data.showcase import Showcase
+from hdx.utilities.retriever import Retrieve
 
 logger = logging.getLogger(__name__)
 
 
 class DatasetGenerator:
+    tags = [
+        "hxl",
+        "development",
+        "education",
+        "health",
+        "indicators",
+        "mortality",
+        "nutrition",
+        "poverty",
+        "socioeconomics",
+        "sustainable development goals-sdg",
+        "water sanitation and hygiene-wash",
+    ]
+
     def __init__(
-        self, configuration: Configuration, trend_path: str, mpi_path: str
+        self,
+        configuration: Configuration,
+        mpi_national_path: str,
+        mpi_subnational_path: str,
+        trend_path: str,
     ) -> None:
         self._configuration = configuration
+        self._showcase_links = {}
+        self._mpi_national_path = mpi_national_path
+        self._mpi_subnational_path = mpi_subnational_path
         self._trend_path = trend_path
-        self._mpi_path = mpi_path
         self._global_hxltags = configuration["hxltags"]
         self._country_hxltags = copy(self._global_hxltags)
+
+    def load_showcase_links(self, retriever: Retrieve) -> Dict:
+        url = self._configuration["showcaseinfo"]["urls"]
+        _, iterator = retriever.get_tabular_rows(
+            url, dict_form=True, format="csv"
+        )
+        for row in iterator:
+            self._showcase_links[row["Country code"]] = row["URL"]
 
     def generate_resource(
         self,
@@ -47,40 +77,42 @@ class DatasetGenerator:
         )
         return success
 
+    def _slugified_name(self, name: str) -> str:
+        return slugify(name).lower()
+
     def generate_dataset_metadata(
         self,
         title: str,
         name: str,
     ) -> Optional[Dataset]:
         logger.info(f"Creating dataset: {title}")
-        slugified_name = slugify(name).lower()
         dataset = Dataset(
             {
-                "name": slugified_name,
+                "name": self._slugified_name(name),
                 "title": title,
             }
         )
         dataset.set_maintainer("196196be-6037-4488-8b71-d786adf4c081")
         dataset.set_organization("00547685-9ded-4d69-9ca5-47d5278ead7c")
         dataset.set_expected_update_frequency("Every year")
-
-        tags = [
-            "hxl",
-            "development",
-            "education",
-            "health",
-            "indicators",
-            "mortality",
-            "nutrition",
-            "poverty",
-            "socioeconomics",
-            "sustainable development goals-sdg",
-            "water sanitation and hygiene-wash",
-        ]
-        dataset.add_tags(tags)
-
+        dataset.add_tags(self.tags)
         dataset.set_subnational(True)
         return dataset
+
+    def generate_showcase(
+        self, name: str, title: str, countryiso3: str
+    ) -> Showcase:
+        showcase = Showcase(
+            {
+                "name": f"{self._slugified_name(name)}-showcase",
+                "title": title,
+                "notes": self._configuration["showcaseinfo"]["notes"],
+                "url": self._showcase_links[countryiso3],
+                "image_url": "",
+            }
+        )
+        showcase.add_tags(self.tags)
+        return showcase
 
     def generate_dataset(
         self,
@@ -97,16 +129,24 @@ class DatasetGenerator:
         name = f"{countryname} MPI"
         dataset = self.generate_dataset_metadata(title, name)
         dataset.set_time_period(date_range["start"], date_range["end"])
-        resource_description = self._configuration["resource_description"]
+        resource_descriptions = self._configuration["resource_descriptions"]
 
         resource_name = f"{countryname} MPI and Partial Indices"
         filename = f"{countryiso3}_mpi.csv"
         success = self.generate_resource(
             dataset,
             resource_name,
-            resource_description,
+            resource_descriptions["standardised_mpi"],
             self._country_hxltags,
-            standardised_rows,
+            sorted(
+                standardised_rows,
+                key=lambda x: (
+                    x["country_code"],
+                    x["admin1_code"] if x["admin1_code"] else "",
+                    x["admin1_name"] if x["admin1_name"] else "",
+                    x["reference_period_end"],
+                ),
+            ),
             folder,
             filename,
         )
@@ -121,9 +161,17 @@ class DatasetGenerator:
         success = self.generate_resource(
             dataset,
             resource_name,
-            resource_description,
+            resource_descriptions["standardised_trends"],
             self._country_hxltags,
-            standardised_trend_rows,
+            sorted(
+                standardised_trend_rows,
+                key=lambda x: (
+                    x["country_code"],
+                    x["admin1_code"] if x["admin1_code"] else "",
+                    x["admin1_name"] if x["admin1_name"] else "",
+                    x["reference_period_end"],
+                ),
+            ),
             folder,
             filename,
         )
@@ -147,21 +195,32 @@ class DatasetGenerator:
             date_range,
         )
 
+        resource_descriptions = self._configuration["resource_descriptions"]
         resourcedata = {
-            "name": "Trends Over Time MPI database",
-            "description": self._configuration["trends_resource_description"],
+            "name": "MPI and Partial Indices National Database",
+            "description": resource_descriptions["mpi_national"],
+        }
+        resource = Resource(resourcedata)
+        resource.set_format("xlsx")
+        resource.set_file_to_upload(self._mpi_national_path)
+        dataset.add_update_resource(resource)
+
+        resourcedata = {
+            "name": "MPI and Partial Indices Subnational Database",
+            "description": resource_descriptions["mpi_subnational"],
+        }
+        resource = Resource(resourcedata)
+        resource.set_format("xlsx")
+        resource.set_file_to_upload(self._mpi_subnational_path)
+        dataset.add_update_resource(resource)
+
+        resourcedata = {
+            "name": "Trends Over Time MPI Database",
+            "description": resource_descriptions["trends"],
         }
         resource = Resource(resourcedata)
         resource.set_format("xlsx")
         resource.set_file_to_upload(self._trend_path)
         dataset.add_update_resource(resource)
 
-        resourcedata = {
-            "name": "MPI and Partial Indices database",
-            "description": self._configuration["trends_resource_description"],
-        }
-        resource = Resource(resourcedata)
-        resource.set_format("xlsx")
-        resource.set_file_to_upload(self._mpi_path)
-        dataset.add_update_resource(resource)
         return dataset
