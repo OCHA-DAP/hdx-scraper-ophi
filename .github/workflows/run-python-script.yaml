@@ -25,7 +25,7 @@ jobs:
         HDX_SITE: ${{ vars.HDX_SITE }}
         HDX_KEY: ${{ secrets.HDX_BOT_SCRAPERS_API_TOKEN }}
         PREPREFIX: ${{ vars.HDX_USER_AGENT_PREPREFIX }}
-        USER_AGENT: ${{ secrets.USER_AGENT }}
+        USER_AGENT: ${{ vars.USER_AGENT }}
         EXTRA_PARAMS: ${{ secrets.EXTRA_PARAMS }}
       run: |
         python -m hdx.scraper.ophi
