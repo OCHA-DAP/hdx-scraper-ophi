@@ -1,6 +1,6 @@
 import logging
 from copy import copy
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 
 from slugify import slugify
 
@@ -117,8 +117,8 @@ class DatasetGenerator:
     def generate_dataset(
         self,
         folder: str,
-        standardised_rows: List[Dict],
-        standardised_trend_rows: List[Dict],
+        standardised_rows: Iterable,
+        standardised_trend_rows: Iterable,
         countryiso3: str,
         countryname: str,
         date_range: Dict,
@@ -180,8 +180,8 @@ class DatasetGenerator:
     def generate_global_dataset(
         self,
         folder: str,
-        standardised_rows: List[Dict],
-        standardised_trend_rows: List[Dict],
+        standardised_rows: Iterable,
+        standardised_trend_rows: Iterable,
         date_range: Dict,
     ) -> Optional[Dataset]:
         if not standardised_rows:

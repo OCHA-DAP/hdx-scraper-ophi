@@ -331,10 +331,12 @@ class TestOPHI:
 
                 countryiso3 = "AFG"
                 countryname = Country.get_country_name_from_iso3(countryiso3)
-                standardised_country = standardised_countries[countryiso3]
+                standardised_country = standardised_countries[
+                    countryiso3
+                ].values()
                 standardised_country_trend = standardised_countries_trend.get(
                     countryiso3
-                )
+                ).values()
                 dataset = dataset_generator.generate_dataset(
                     tempdir,
                     standardised_country,
