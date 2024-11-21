@@ -113,8 +113,8 @@ def main(
                     )
                     dataset = dataset_generator.generate_dataset(
                         folder,
-                        standardised_country,
-                        standardised_country_trend,
+                        standardised_country.values(),
+                        standardised_country_trend.values(),
                         countryiso3,
                         countryname,
                         date_ranges[countryiso3],
