@@ -21,7 +21,7 @@ datasetinfo:
 
 showcaseinfo:
   # https://docs.google.com/spreadsheets/d/1mChJ1UhgLtqLD-hqbFxd5eKq-L7Nz6awD2znBcEkASs/edit?gid=0#gid=0
-  urls: "https://docs.google.com/spreadsheets/d/1mChJ1UhgLtqLD-hqbFxd5eKq-L7Nz6awD2znBcEkASs/export?format=csv&gid=0"
+  urls: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPXtof5E54tGcQcDOUVwKMV9Kelkt_KqyiYCfGtSUg1B7EoMe7lfoVIHeaL2ij6fyxytplaJQojxyp/pub?gid=0&single=true&output=csv"
   notes: "The visual contains sub-national multidimensional poverty data from the country briefs published by the Oxford Poverty and Human Development Initiative (OPHI), University of Oxford."
 
 hxltags:

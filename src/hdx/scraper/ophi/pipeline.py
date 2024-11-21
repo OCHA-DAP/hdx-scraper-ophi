@@ -1,10 +1,14 @@
-from typing import Dict, List, Tuple
+import logging
+from datetime import datetime
+from typing import Dict, Iterable, List, Tuple
 
 from hdx.api.configuration import Configuration
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import parse_date_range
-from hdx.utilities.dictandlist import dict_of_lists_add
+from hdx.utilities.dictandlist import dict_of_dicts_add
 from hdx.utilities.retriever import Retrieve
+
+logger = logging.getLogger(__name__)
 
 
 class Pipeline:
@@ -17,15 +21,15 @@ class Pipeline:
         self._retriever = retriever
         self._adminone = AdminLevel(admin_level=1, retriever=self._retriever)
         self._adminone.setup_from_url()
-        self._standardised_global = []
-        self._standardised_global_trend = []
+        self._standardised_global = {}
+        self._standardised_global_trend = [{}, {}]
         self._standardised_countries = {}
-        self._standardised_countries_trend = {}
+        self._standardised_countries_trend = [{}, {}]
         self._date_ranges = {}
 
     def process_date(
         self, countryiso3: str, date_range: str, row: Dict
-    ) -> None:
+    ) -> Tuple[datetime, datetime]:
         date_range = date_range.split("-")
         if len(date_range) == 2:
             start_date, _ = parse_date_range(date_range[0])
@@ -52,6 +56,26 @@ class Pipeline:
 
         update_date_range(countryiso3)
         update_date_range("global")
+        return start_date, end_date
+
+    def add_row(
+        self,
+        countryiso3: str,
+        admin1_code: str,
+        admin1_name: str,
+        date_range: str,
+        row: Dict,
+        global_dict: Dict,
+        country_dict: Dict,
+        msg: str,
+    ) -> None:
+        start_date, end_date = self.process_date(countryiso3, date_range, row)
+        key = (countryiso3, admin1_code, admin1_name, start_date, end_date)
+        if key in global_dict:
+            logger.error(f"Key {key} already exists in {msg}!")
+            return
+        global_dict[key] = row
+        dict_of_dicts_add(country_dict, countryiso3, key, row)
 
     def read_mpi_national_data(
         self, path: str, format: str, sheet: str, headers: List[str]
@@ -88,9 +112,16 @@ class Pipeline:
                 "Multidimensional poverty In severe poverty (severity 50% or higher) % Population"
             ]
             date_range = inrow["MPI data source Year"]
-            self.process_date(countryiso3, date_range, row)
-            self._standardised_global.append(row)
-            dict_of_lists_add(self._standardised_countries, countryiso3, row)
+            self.add_row(
+                countryiso3,
+                "",
+                "",
+                date_range,
+                row,
+                self._standardised_global,
+                self._standardised_countries,
+                "mpi_national",
+            )
 
     def read_mpi_subnational_data(
         self, path: str, format: str, sheet: str, headers: List[str]
@@ -129,11 +160,18 @@ class Pipeline:
                 "Multidimensional poverty by region In severe poverty % Population"
             ]
             date_range = inrow["MPI data source Year"]
-            self.process_date(countryiso3, date_range, row)
-            self._standardised_global.append(row)
-            dict_of_lists_add(self._standardised_countries, countryiso3, row)
+            self.add_row(
+                countryiso3,
+                admin1_code,
+                admin1_name,
+                date_range,
+                row,
+                self._standardised_global,
+                self._standardised_countries,
+                "mpi_subnational",
+            )
 
-    def read_national_trends_data(
+    def read_trends_national_data(
         self, path: str, format: str, sheet: str, headers: List[str]
     ) -> None:
         _, iterator = self._retriever.downloader.get_tabular_rows(
@@ -147,18 +185,11 @@ class Pipeline:
             countryiso3 = inrow["ISO country code"]
             if not countryiso3:
                 continue
-            admin1_name = inrow.get("Region")
-            if admin1_name:
-                admin1_code, _ = self._adminone.get_pcode(
-                    countryiso3, admin1_name
-                )
-            else:
-                admin1_code = ""
             for i, timepoint in enumerate(("t0", "t1")):
                 row = {
                     "country_code": countryiso3,
-                    "admin1_code": admin1_code,
-                    "admin1_name": admin1_name,
+                    "admin1_code": "",
+                    "admin1_name": "",
                 }
                 row["mpi"] = inrow[
                     f"Multidimensional Poverty Index (MPIT) {timepoint} Range  0 to 1"
@@ -176,13 +207,18 @@ class Pipeline:
                     f"In severe poverty {timepoint} % pop."
                 ]
                 date_range = inrow[f"MPI data source {timepoint} Year"]
-                self.process_date(countryiso3, date_range, row)
-                self._standardised_global_trend.append(row)
-                dict_of_lists_add(
-                    self._standardised_countries_trend, countryiso3, row
+                self.add_row(
+                    countryiso3,
+                    "",
+                    "",
+                    date_range,
+                    row,
+                    self._standardised_global_trend[i],
+                    self._standardised_countries_trend[i],
+                    "trends_subnational",
                 )
 
-    def read_subnational_trends_data(
+    def read_trends_subnational_data(
         self, path: str, format: str, sheet: str, headers: List[str]
     ) -> None:
         _, iterator = self._retriever.downloader.get_tabular_rows(
@@ -196,13 +232,8 @@ class Pipeline:
             countryiso3 = inrow["ISO country code"]
             if not countryiso3:
                 continue
-            admin1_name = inrow.get("Region")
-            if admin1_name:
-                admin1_code, _ = self._adminone.get_pcode(
-                    countryiso3, admin1_name
-                )
-            else:
-                admin1_code = ""
+            admin1_name = inrow["Region"]
+            admin1_code, _ = self._adminone.get_pcode(countryiso3, admin1_name)
             for i, timepoint in enumerate(("t0", "t1")):
                 row = {
                     "country_code": countryiso3,
@@ -225,10 +256,15 @@ class Pipeline:
                     f"In severe poverty {timepoint} % pop."
                 ]
                 date_range = inrow[f"MPI data source {timepoint} Year"]
-                self.process_date(countryiso3, date_range, row)
-                self._standardised_global_trend.append(row)
-                dict_of_lists_add(
-                    self._standardised_countries_trend, countryiso3, row
+                self.add_row(
+                    countryiso3,
+                    admin1_code,
+                    admin1_name,
+                    date_range,
+                    row,
+                    self._standardised_global_trend[i],
+                    self._standardised_countries_trend[i],
+                    "trends_subnational",
                 )
 
     def process(self) -> Tuple[str, str, str]:
@@ -261,23 +297,28 @@ class Pipeline:
             url, "trends-over-time-mpi.xlsx"
         )
         sheet = trend_over_time["national_sheet"]
-        self.read_national_trends_data(trend_path, format, sheet, headers)
+        self.read_trends_national_data(trend_path, format, sheet, headers)
         sheet = trend_over_time["subnational_sheet"]
-        self.read_subnational_trends_data(trend_path, format, sheet, headers)
+        self.read_trends_subnational_data(trend_path, format, sheet, headers)
 
         return mpi_national_path, mpi_subnational_path, trend_path
 
-    def get_standardised_global(self) -> List:
-        return self._standardised_global
+    def get_standardised_global(self) -> Iterable:
+        return self._standardised_global.values()
 
     def get_standardised_countries(self) -> Dict:
         return self._standardised_countries
 
-    def get_standardised_global_trend(self) -> List:
-        return self._standardised_global_trend
+    def get_standardised_global_trend(self) -> Iterable:
+        self._standardised_global_trend[0].update(
+            self._standardised_global_trend[1]
+        )
+        return self._standardised_global_trend[0].values()
 
     def get_standardised_countries_trend(self) -> Dict:
-        return self._standardised_countries_trend
+        for key, value in self._standardised_countries_trend[0].items():
+            value.update(self._standardised_countries_trend[1][key])
+        return self._standardised_countries_trend[0]
 
     def get_date_ranges(self) -> Dict:
         return self._date_ranges
