@@ -426,3 +426,62 @@ class TestOPHI:
                     expected_file = join(fixtures_dir, filename)
                     actual_file = join(tempdir, filename)
                     assert_files_same(expected_file, actual_file)
+                dataset_generator.load_showcase_links(retriever)
+                showcase = dataset_generator.generate_showcase(
+                    countryiso3, countryname
+                )
+                assert showcase == {
+                    "image_url": "https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-ophi/main/ophi_mpi.jpg",
+                    "name": "afghanistan-mpi-showcase",
+                    "notes": "The visual contains sub-national multidimensional poverty data from "
+                    "the country briefs published by the Oxford Poverty and Human "
+                    "Development Initiative (OPHI), University of Oxford.",
+                    "tags": [
+                        {
+                            "name": "hxl",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "development",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "education",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "health",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "indicators",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "mortality",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "nutrition",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "poverty",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "socioeconomics",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "sustainable development goals-sdg",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "water sanitation and hygiene-wash",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                    ],
+                    "title": "Afghanistan Multi Dimensional Poverty Index",
+                    "url": "https://ophi.org.uk/media/45972/download",
+                }

@@ -99,16 +99,31 @@ class DatasetGenerator:
         dataset.set_subnational(True)
         return dataset
 
+    @staticmethod
+    def get_title(countryname: str) -> str:
+        return f"{countryname} Multi Dimensional Poverty Index"
+
+    @staticmethod
+    def get_name(countryname: str) -> str:
+        return f"{countryname} MPI"
+
     def generate_showcase(
-        self, name: str, title: str, countryiso3: str
-    ) -> Showcase:
+        self,
+        countryiso3: str,
+        countryname: str,
+    ) -> Optional[Showcase]:
+        url = self._showcase_links.get(countryiso3)
+        if not url:
+            return None
+        name = self.get_name(countryname)
+        title = self.get_title(countryname)
         showcase = Showcase(
             {
                 "name": f"{self._slugified_name(name)}-showcase",
                 "title": title,
                 "notes": self._configuration["showcaseinfo"]["notes"],
                 "url": self._showcase_links[countryiso3],
-                "image_url": "",
+                "image_url": "https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-ophi/main/ophi_mpi.jpg",
             }
         )
         showcase.add_tags(self.tags)
@@ -125,8 +140,8 @@ class DatasetGenerator:
     ) -> Optional[Dataset]:
         if not standardised_rows:
             return None
-        title = f"{countryname} Multi Dimensional Poverty Index"
-        name = f"{countryname} MPI"
+        title = self.get_title(countryname)
+        name = self.get_name(countryname)
         dataset = self.generate_dataset_metadata(title, name)
         dataset.set_time_period(date_range["start"], date_range["end"])
         resource_descriptions = self._configuration["resource_descriptions"]

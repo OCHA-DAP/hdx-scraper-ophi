@@ -7,11 +7,21 @@ from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import parse_date_range
 from hdx.utilities.dictandlist import dict_of_dicts_add
 from hdx.utilities.retriever import Retrieve
+from hdx.utilities.text import number_format
 
 logger = logging.getLogger(__name__)
 
 
 class Pipeline:
+    headers = (
+        "mpi",
+        "headcount_ratio",
+        "intensity_of_deprivation",
+        "vulnerable_to_poverty",
+        "in_severe_poverty",
+    )
+    timepoints = ("t0", "t1")
+
     def __init__(
         self,
         configuration: Configuration,
@@ -77,9 +87,22 @@ class Pipeline:
         global_dict[key] = row
         dict_of_dicts_add(country_dict, countryiso3, key, row)
 
+    @classmethod
+    def set_mpi(cls, inheaders: Tuple[str], inrow: Dict, row: Dict) -> None:
+        for i, inheader in enumerate(inheaders):
+            header = cls.headers[i]
+            row[header] = number_format(inrow[inheader], format="%.2f")
+
     def read_mpi_national_data(
         self, path: str, format: str, sheet: str, headers: List[str]
     ) -> None:
+        inheaders = (
+            "Multidimensional poverty Multidimensional Poverty Index (MPI = H*A) Range 0 to 1",
+            "Multidimensional poverty Headcount ratio: Population in multidimensional poverty (H) % Population",
+            "Multidimensional poverty Intensity of deprivation among the poor (A) Average % of weighted deprivations",
+            "Multidimensional poverty Vulnerable to poverty (who experience 20-33.32% intensity of deprivations) % Population",
+            "Multidimensional poverty In severe poverty (severity 50% or higher) % Population",
+        )
         _, iterator = self._retriever.downloader.get_tabular_rows(
             path,
             format=format,
@@ -96,21 +119,7 @@ class Pipeline:
                 "admin1_code": "",
                 "admin1_name": "",
             }
-            row["mpi"] = inrow[
-                "Multidimensional poverty Multidimensional Poverty Index (MPI = H*A) Range 0 to 1"
-            ]
-            row["headcount_ratio"] = inrow[
-                "Multidimensional poverty Headcount ratio: Population in multidimensional poverty (H) % Population"
-            ]
-            row["intensity_of_deprivation"] = inrow[
-                "Multidimensional poverty Intensity of deprivation among the poor (A) Average % of weighted deprivations"
-            ]
-            row["vulnerable_to_poverty"] = inrow[
-                "Multidimensional poverty Vulnerable to poverty (who experience 20-33.32% intensity of deprivations) % Population"
-            ]
-            row["in_severe_poverty"] = inrow[
-                "Multidimensional poverty In severe poverty (severity 50% or higher) % Population"
-            ]
+            self.set_mpi(inheaders, inrow, row)
             date_range = inrow["MPI data source Year"]
             self.add_row(
                 countryiso3,
@@ -126,6 +135,13 @@ class Pipeline:
     def read_mpi_subnational_data(
         self, path: str, format: str, sheet: str, headers: List[str]
     ) -> None:
+        inheaders = (
+            "Multidimensional poverty by region Multidimensional Poverty Index (MPI = H*A) Range 0 to 1",
+            "Multidimensional poverty by region Headcount ratio: Population in multidimensional poverty (H) % Population",
+            "Multidimensional poverty by region Intensity of deprivation among the poor (A) Average % of weighted deprivations",
+            "Multidimensional poverty by region Vulnerable to poverty % Population",
+            "Multidimensional poverty by region In severe poverty % Population",
+        )
         _, iterator = self._retriever.downloader.get_tabular_rows(
             path,
             format=format,
@@ -144,21 +160,7 @@ class Pipeline:
                 "admin1_code": admin1_code,
                 "admin1_name": admin1_name,
             }
-            row["mpi"] = inrow[
-                "Multidimensional poverty by region Multidimensional Poverty Index (MPI = H*A) Range 0 to 1"
-            ]
-            row["headcount_ratio"] = inrow[
-                "Multidimensional poverty by region Headcount ratio: Population in multidimensional poverty (H) % Population"
-            ]
-            row["intensity_of_deprivation"] = inrow[
-                "Multidimensional poverty by region Intensity of deprivation among the poor (A) Average % of weighted deprivations"
-            ]
-            row["vulnerable_to_poverty"] = inrow[
-                "Multidimensional poverty by region Vulnerable to poverty % Population"
-            ]
-            row["in_severe_poverty"] = inrow[
-                "Multidimensional poverty by region In severe poverty % Population"
-            ]
+            self.set_mpi(inheaders, inrow, row)
             date_range = inrow["MPI data source Year"]
             self.add_row(
                 countryiso3,
@@ -174,6 +176,16 @@ class Pipeline:
     def read_trends_national_data(
         self, path: str, format: str, sheet: str, headers: List[str]
     ) -> None:
+        inheaders_tn = []
+        for timepoint in self.timepoints:
+            inheaders = (
+                f"Multidimensional Poverty Index (MPIT) {timepoint} Range  0 to 1",
+                f"Multidimensional Headcount Ratio (HT) {timepoint} % pop.",
+                f"Intensity of Poverty (AT) {timepoint} Avg % of  weighted deprivations",
+                f"Vulnerable to poverty {timepoint} % pop.",
+                f"In severe poverty {timepoint} % pop.",
+            )
+            inheaders_tn.append(inheaders)
         _, iterator = self._retriever.downloader.get_tabular_rows(
             path,
             format=format,
@@ -185,27 +197,14 @@ class Pipeline:
             countryiso3 = inrow["ISO country code"]
             if not countryiso3:
                 continue
-            for i, timepoint in enumerate(("t0", "t1")):
+            for i, timepoint in enumerate(self.timepoints):
                 row = {
                     "country_code": countryiso3,
                     "admin1_code": "",
                     "admin1_name": "",
                 }
-                row["mpi"] = inrow[
-                    f"Multidimensional Poverty Index (MPIT) {timepoint} Range  0 to 1"
-                ]
-                row["headcount_ratio"] = inrow[
-                    f"Multidimensional Headcount Ratio (HT) {timepoint} % pop."
-                ]
-                row["intensity_of_deprivation"] = inrow[
-                    f"Intensity of Poverty (AT) {timepoint} Avg % of  weighted deprivations"
-                ]
-                row["vulnerable_to_poverty"] = inrow[
-                    f"Vulnerable to poverty {timepoint} % pop."
-                ]
-                row["in_severe_poverty"] = inrow[
-                    f"In severe poverty {timepoint} % pop."
-                ]
+                inheaders = inheaders_tn[i]
+                self.set_mpi(inheaders, inrow, row)
                 date_range = inrow[f"MPI data source {timepoint} Year"]
                 self.add_row(
                     countryiso3,
@@ -221,6 +220,16 @@ class Pipeline:
     def read_trends_subnational_data(
         self, path: str, format: str, sheet: str, headers: List[str]
     ) -> None:
+        inheaders_tn = []
+        for timepoint in self.timepoints:
+            inheaders = (
+                f"Multidimensional Poverty Index (MPIT) {timepoint} Range 0 to 1",
+                f"Multidimensional Headcount Ratio (HT) {timepoint} % pop.",
+                f"Intensity of Poverty (AT) {timepoint} Avg % of  weighted deprivations",
+                f"Vulnerable to poverty {timepoint} % pop.",
+                f"In severe poverty {timepoint} % pop.",
+            )
+            inheaders_tn.append(inheaders)
         _, iterator = self._retriever.downloader.get_tabular_rows(
             path,
             format=format,
@@ -234,27 +243,14 @@ class Pipeline:
                 continue
             admin1_name = inrow["Region"]
             admin1_code, _ = self._adminone.get_pcode(countryiso3, admin1_name)
-            for i, timepoint in enumerate(("t0", "t1")):
+            for i, timepoint in enumerate(self.timepoints):
                 row = {
                     "country_code": countryiso3,
                     "admin1_code": admin1_code,
                     "admin1_name": admin1_name,
                 }
-                row["mpi"] = inrow[
-                    f"Multidimensional Poverty Index (MPIT) {timepoint} Range 0 to 1"
-                ]
-                row["headcount_ratio"] = inrow[
-                    f"Multidimensional Headcount Ratio (HT) {timepoint} % pop."
-                ]
-                row["intensity_of_deprivation"] = inrow[
-                    f"Intensity of Poverty (AT) {timepoint} Avg % of  weighted deprivations"
-                ]
-                row["vulnerable_to_poverty"] = inrow[
-                    f"Vulnerable to poverty {timepoint} % pop."
-                ]
-                row["in_severe_poverty"] = inrow[
-                    f"In severe poverty {timepoint} % pop."
-                ]
+                inheaders = inheaders_tn[i]
+                self.set_mpi(inheaders, inrow, row)
                 date_range = inrow[f"MPI data source {timepoint} Year"]
                 self.add_row(
                     countryiso3,
