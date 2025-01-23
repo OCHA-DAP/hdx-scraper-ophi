@@ -35,8 +35,8 @@ requires-python = ">=3.8"
 
 dependencies = [
     "hdx-python-api>= 6.3.5",
-    "hdx-python-country>= 3.8.5",
-    "hdx-python-utilities>= 3.7.4",
+    "hdx-python-country>= 3.8.7",
+    "hdx-python-utilities>= 3.8.2",
 ]
 dynamic = ["version"]
 
@@ -94,7 +94,7 @@ run = """
        """
 
 [tool.hatch.envs.hatch-static-analysis]
-dependencies = ["ruff==0.7.0"]
+dependencies = ["ruff==0.8.6"]
 
 [tool.hatch.envs.hatch-static-analysis.scripts]
 format-check = ["ruff format --config .config/ruff.toml --check --diff {args:.}",]

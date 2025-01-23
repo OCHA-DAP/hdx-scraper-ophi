@@ -144,6 +144,7 @@ class DatasetGenerator:
         name = self.get_name(countryname)
         dataset = self.generate_dataset_metadata(title, name)
         dataset.set_time_period(date_range["start"], date_range["end"])
+        methodology_info = self._configuration["methodology"]
         resource_descriptions = self._configuration["resource_descriptions"]
 
         resource_name = f"{countryname} MPI and Partial Indices"
@@ -169,6 +170,13 @@ class DatasetGenerator:
             logger.warning(f"{name} has no data!")
             return None
 
+        methodology_text = methodology_info["text"]
+        mpi_and_partial_indices_methodology = methodology_info[
+            "mpi_and_partial_indices"
+        ]
+        dataset["methodology_other"] = (
+            f"{methodology_text} {mpi_and_partial_indices_methodology}"
+        )
         if not standardised_trend_rows:
             return dataset
         resource_name = f"{countryname} MPI Trends Over Time"
@@ -190,6 +198,8 @@ class DatasetGenerator:
             folder,
             filename,
         )
+        trend_over_time_methodology = methodology_info["trend_over_time"]
+        dataset["methodology_other"] += f", {trend_over_time_methodology}"
         return dataset
 
     def generate_global_dataset(
