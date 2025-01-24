@@ -157,10 +157,10 @@ class DatasetGenerator:
             sorted(
                 standardised_rows,
                 key=lambda x: (
-                    x["country_code"],
-                    x["admin1_code"] if x["admin1_code"] else "",
-                    x["admin1_name"] if x["admin1_name"] else "",
-                    x["reference_period_end"],
+                    x["Country ISO3"],
+                    x["Admin 1 PCode"] if x["Admin 1 PCode"] else "",
+                    x["Admin 1 Name"] if x["Admin 1 Name"] else "",
+                    x["End Date"],
                 ),
             ),
             folder,
@@ -189,10 +189,10 @@ class DatasetGenerator:
             sorted(
                 standardised_trend_rows,
                 key=lambda x: (
-                    x["country_code"],
-                    x["admin1_code"] if x["admin1_code"] else "",
-                    x["admin1_name"] if x["admin1_name"] else "",
-                    x["reference_period_end"],
+                    x["Country ISO3"],
+                    x["Admin 1 PCode"] if x["Admin 1 PCode"] else "",
+                    x["Admin 1 Name"] if x["Admin 1 Name"] else "",
+                    x["End Date"],
                 ),
             ),
             folder,

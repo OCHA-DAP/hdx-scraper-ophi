@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 
 class Pipeline:
     headers = (
-        "mpi",
-        "headcount_ratio",
-        "intensity_of_deprivation",
-        "vulnerable_to_poverty",
-        "in_severe_poverty",
+        "MPI",
+        "Headcount Ratio",
+        "Intensity of Deprivation",
+        "Vulnerable to Poverty",
+        "In Severe Poverty",
     )
     timepoints = ("t0", "t1")
 
@@ -48,8 +48,8 @@ class Pipeline:
             start_date, end_date = parse_date_range(
                 date_range[0], max_endtime=True
             )
-        row["reference_period_start"] = start_date
-        row["reference_period_end"] = end_date
+        row["Start Date"] = start_date
+        row["End Date"] = end_date
 
         def update_date_range(countryiso3: str):
             current_date_range = self._date_ranges.get(countryiso3)
@@ -115,9 +115,9 @@ class Pipeline:
             if not countryiso3:
                 continue
             row = {
-                "country_code": countryiso3,
-                "admin1_code": "",
-                "admin1_name": "",
+                "Country ISO3": countryiso3,
+                "Admin 1 PCode": "",
+                "Admin 1 Name": "",
             }
             self.set_mpi(inheaders, inrow, row)
             date_range = inrow["MPI data source Year"]
@@ -156,9 +156,9 @@ class Pipeline:
             admin1_name = inrow.get("Subnational  region")
             admin1_code, _ = self._adminone.get_pcode(countryiso3, admin1_name)
             row = {
-                "country_code": countryiso3,
-                "admin1_code": admin1_code,
-                "admin1_name": admin1_name,
+                "Country ISO3": countryiso3,
+                "Admin 1 PCode": admin1_code,
+                "Admin 1 Name": admin1_name,
             }
             self.set_mpi(inheaders, inrow, row)
             date_range = inrow["MPI data source Year"]
@@ -199,9 +199,9 @@ class Pipeline:
                 continue
             for i, timepoint in enumerate(self.timepoints):
                 row = {
-                    "country_code": countryiso3,
-                    "admin1_code": "",
-                    "admin1_name": "",
+                    "Country ISO3": countryiso3,
+                    "Admin 1 PCode": "",
+                    "Admin 1 Name": "",
                 }
                 inheaders = inheaders_tn[i]
                 self.set_mpi(inheaders, inrow, row)
@@ -245,9 +245,9 @@ class Pipeline:
             admin1_code, _ = self._adminone.get_pcode(countryiso3, admin1_name)
             for i, timepoint in enumerate(self.timepoints):
                 row = {
-                    "country_code": countryiso3,
-                    "admin1_code": admin1_code,
-                    "admin1_name": admin1_name,
+                    "Country ISO3": countryiso3,
+                    "Admin 1 PCode": admin1_code,
+                    "Admin 1 Name": admin1_name,
                 }
                 inheaders = inheaders_tn[i]
                 self.set_mpi(inheaders, inrow, row)
