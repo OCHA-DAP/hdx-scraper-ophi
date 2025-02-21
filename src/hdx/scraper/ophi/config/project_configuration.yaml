@@ -55,6 +55,7 @@ hapi_dataset:
   tags:
     - "education"
     - "health"
+    - "hxl"
     - "indicators"
     - "poverty"
   dataset_source: "Oxford Poverty & Human Development Initiative"
