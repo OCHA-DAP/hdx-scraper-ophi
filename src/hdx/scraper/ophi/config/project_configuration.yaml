@@ -80,4 +80,3 @@ hapi_dataset:
       reference_period_end: "#date+end"
       "dataset_hdx_id": "#meta+dataset_id"
       "resource_hdx_id": "#meta+resource_id"
-      "warning": "#meta+warning"
