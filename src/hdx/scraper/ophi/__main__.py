@@ -8,9 +8,12 @@ from src.hdx.scraper.ophi.pipeline import Pipeline
 from hdx.api.configuration import Configuration
 from hdx.data.user import User
 from hdx.facades.infer_arguments import facade
+from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
 from hdx.scraper.ophi._version import __version__
 from hdx.scraper.ophi.dataset_generator import DatasetGenerator
+from hdx.scraper.ophi.hapi_dataset_generator import HAPIDatasetGenerator
+from hdx.scraper.ophi.hapi_output import HAPIOutput
 from hdx.utilities.downloader import Download
 from hdx.utilities.easy_logging import setup_logging
 from hdx.utilities.path import (
@@ -52,12 +55,10 @@ def main(
         folder = info["folder"]
         batch = info["batch"]
 
-        def update_dataset(dataset):
+        def update_dataset(dataset, filename="hdx_dataset_static.yaml"):
             if dataset:
                 dataset.update_from_yaml(
-                    script_dir_plus_file(
-                        join("config", "hdx_dataset_static.yaml"), main
-                    )
+                    script_dir_plus_file(join("config", filename), main)
                 )
                 dataset.create_in_hdx(
                     remove_additional_resources=True,
@@ -70,7 +71,10 @@ def main(
             retriever = Retrieve(
                 downloader, folder, "saved_data", folder, save, use_saved
             )
-            pipeline = Pipeline(configuration, retriever)
+            adminone = AdminLevel(admin_level=1, retriever=retriever)
+            adminone.setup_from_url()
+
+            pipeline = Pipeline(configuration, retriever, adminone)
             mpi_national_path, mpi_subnational_path, trend_path = (
                 pipeline.process()
             )
@@ -89,14 +93,38 @@ def main(
                 pipeline.get_standardised_countries_trend()
             )
             date_ranges = pipeline.get_date_ranges()
+            global_date_range = date_ranges["global"]
+            countries_with_data = list(standardised_countries.keys())
+
             dataset = dataset_generator.generate_global_dataset(
                 folder,
                 standardised_global,
                 standardised_global_trend,
-                date_ranges["global"],
+                global_date_range,
             )
-            dataset.add_country_locations(list(standardised_countries.keys()))
+            dataset.add_country_locations(countries_with_data)
             update_dataset(dataset)
+
+            dataset_id = dataset["id"]
+            resource_ids = [x["id"] for x in dataset.get_resources()]
+            time_period = dataset.get_time_period()
+
+            hapi_output = HAPIOutput(
+                configuration,
+                adminone,
+                standardised_global,
+                standardised_global_trend,
+            )
+            rows = hapi_output.process(dataset_id, resource_ids)
+            hapi_dataset_generator = HAPIDatasetGenerator(configuration, rows)
+            dataset = hapi_dataset_generator.generate_poverty_rate_dataset(
+                folder
+            )
+            dataset.add_country_locations(countries_with_data)
+            dataset.set_time_period(
+                time_period["startdate"], time_period["enddate"]
+            )
+            update_dataset(dataset, "hdx_hapi_dataset_static.yaml")
 
             if create_country_datasets:
                 dataset_generator.load_showcase_links(retriever)
@@ -112,8 +140,8 @@ def main(
                     )
                     dataset = dataset_generator.generate_dataset(
                         folder,
-                        standardised_country.values(),
-                        standardised_country_trend.values(),
+                        standardised_country,
+                        standardised_country_trend,
                         countryiso3,
                         countryname,
                         date_ranges[countryiso3],

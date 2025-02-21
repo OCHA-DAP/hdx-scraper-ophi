@@ -6,8 +6,11 @@ import pytest
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
 from hdx.data.vocabulary import Vocabulary
+from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
 from hdx.scraper.ophi.dataset_generator import DatasetGenerator
+from hdx.scraper.ophi.hapi_dataset_generator import HAPIDatasetGenerator
+from hdx.scraper.ophi.hapi_output import HAPIOutput
 from hdx.scraper.ophi.pipeline import Pipeline
 from hdx.utilities.compare import assert_files_same
 from hdx.utilities.downloader import Download
@@ -84,7 +87,10 @@ class TestOPHI:
                     save=False,
                     use_saved=True,
                 )
-                pipeline = Pipeline(configuration, retriever)
+                adminone = AdminLevel(admin_level=1, retriever=retriever)
+                adminone.setup_from_url()
+
+                pipeline = Pipeline(configuration, retriever, adminone)
                 mpi_national_path, mpi_subnational_path, trend_path = (
                     pipeline.process()
                 )
@@ -330,14 +336,68 @@ class TestOPHI:
                     actual_file = join(tempdir, filename)
                     assert_files_same(expected_file, actual_file)
 
+                hapi_output = HAPIOutput(
+                    configuration,
+                    adminone,
+                    standardised_global,
+                    standardised_global_trend,
+                )
+                rows = hapi_output.process("1234", "5678")
+                hapi_dataset_generator = HAPIDatasetGenerator(
+                    configuration, rows
+                )
+                dataset = hapi_dataset_generator.generate_poverty_rate_dataset(
+                    tempdir
+                )
+                assert dataset == {
+                    "data_update_frequency": "365",
+                    "dataset_preview": "no_preview",
+                    "dataset_source": "Oxford Poverty & Human Development Initiative",
+                    "license_id": "other-pd-nr",
+                    "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
+                    "name": "hdx-hapi-poverty-rate",
+                    "owner_org": "40d10ece-49de-4791-9aed-e164f1d16dd1",
+                    "subnational": "1",
+                    "tags": [
+                        {
+                            "name": "education",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "health",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "indicators",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                        {
+                            "name": "poverty",
+                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                        },
+                    ],
+                    "title": "HDX HAPI - Food Security, Nutrition & Poverty: Poverty Rate",
+                }
+                assert dataset.get_resources()[0] == {
+                    "name": "Global Food Security, Nutrition & Poverty: Poverty Rate",
+                    "description": "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/population_and_socio-economy/#poverty-rate) for more information",
+                    "format": "csv",
+                    "resource_type": "file.upload",
+                    "url_type": "upload",
+                    "dataset_preview_enabled": "False",
+                }
+
+                filename = "hdx_hapi_poverty_rate_global.csv"
+                expected_file = join(fixtures_dir, filename)
+                actual_file = join(tempdir, filename)
+                assert_files_same(expected_file, actual_file)
+
                 countryiso3 = "AFG"
                 countryname = Country.get_country_name_from_iso3(countryiso3)
-                standardised_country = standardised_countries[
-                    countryiso3
-                ].values()
+                standardised_country = standardised_countries[countryiso3]
                 standardised_country_trend = standardised_countries_trend.get(
                     countryiso3
-                ).values()
+                )
                 dataset = dataset_generator.generate_dataset(
                     tempdir,
                     standardised_country,

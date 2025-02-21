@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, List, Tuple
 
 from hdx.api.configuration import Configuration
 from hdx.location.adminlevel import AdminLevel
@@ -26,11 +26,11 @@ class Pipeline:
         self,
         configuration: Configuration,
         retriever: Retrieve,
+        adminone: AdminLevel,
     ) -> None:
         self._configuration = configuration
         self._retriever = retriever
-        self._adminone = AdminLevel(admin_level=1, retriever=self._retriever)
-        self._adminone.setup_from_url()
+        self._adminone = adminone
         self._standardised_global = {}
         self._standardised_global_trend = [{}, {}]
         self._standardised_countries = {}
@@ -80,7 +80,13 @@ class Pipeline:
         msg: str,
     ) -> None:
         start_date, end_date = self.process_date(countryiso3, date_range, row)
-        key = (countryiso3, admin1_code, admin1_name, start_date, end_date)
+        key = (
+            countryiso3,
+            admin1_code or "",
+            admin1_name or "",
+            start_date,
+            end_date,
+        )
         if key in global_dict:
             logger.error(f"Key {key} already exists in {msg}!")
             return
@@ -299,17 +305,17 @@ class Pipeline:
 
         return mpi_national_path, mpi_subnational_path, trend_path
 
-    def get_standardised_global(self) -> Iterable:
-        return self._standardised_global.values()
+    def get_standardised_global(self) -> Dict:
+        return self._standardised_global
 
     def get_standardised_countries(self) -> Dict:
         return self._standardised_countries
 
-    def get_standardised_global_trend(self) -> Iterable:
+    def get_standardised_global_trend(self) -> Dict:
         self._standardised_global_trend[0].update(
             self._standardised_global_trend[1]
         )
-        return self._standardised_global_trend[0].values()
+        return self._standardised_global_trend[0]
 
     def get_standardised_countries_trend(self) -> Dict:
         for key, value in self._standardised_countries_trend[0].items():
