@@ -384,7 +384,7 @@ class TestOPHI:
                 }
                 assert dataset.get_resources()[0] == {
                     "name": "Global Food Security, Nutrition & Poverty: Poverty Rate",
-                    "description": "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/population_and_socio-economy/#poverty-rate) for more information",
+                    "description": "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/food_security_nutrition_and_poverty/#poverty-rate) for more information",
                     "format": "csv",
                     "resource_type": "file.upload",
                     "url_type": "upload",

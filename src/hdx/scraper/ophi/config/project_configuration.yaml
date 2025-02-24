@@ -64,7 +64,7 @@ hapi_dataset:
   license_id: "other-pd-nr"
   resource:
     name: "Global Food Security, Nutrition & Poverty: Poverty Rate"
-    description: "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/population_and_socio-economy/#poverty-rate) for more information"
+    description: "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/food_security_nutrition_and_poverty/#poverty-rate) for more information"
     filename: "hdx_hapi_poverty_rate_global"
     hxltags:
       location_code: "#country+code"
