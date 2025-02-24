@@ -33,8 +33,10 @@ hxltags:
   "Intensity of Deprivation": "#indicator+intensity_of_deprivation"
   "Vulnerable to Poverty": "#indicator+vulnerable_to_poverty"
   "In Severe Poverty": "#indicator+in_severe_poverty"
+  "Survey": "#meta+survey"
   "Start Date": "#date+start"
   "End Date": "#date+end"
+  "Methodology Note Number": "#meta+methodology+num"
 
 methodology:
   text: "The global MPI is a leading policy tool that applies the multidimensional poverty methodology developed by Alkire and Foster [(2011)](https://www.sciencedirect.com/science/article/abs/pii/S0047272710001660?via%3Dihub). The global MPI is the product of incidence of poverty (H) and the average intensity of poverty (A). More information on methodology can be found here: "

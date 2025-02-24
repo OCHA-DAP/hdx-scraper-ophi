@@ -55,7 +55,7 @@ hdx-python-utilities==3.8.4
     #   hdx-python-country
 humanize==4.12.1
     # via frictionless
-identify==2.6.7
+identify==2.6.8
     # via pre-commit
 idna==3.10
     # via
@@ -175,7 +175,7 @@ rfc3986==2.0.0
     # via frictionless
 rich==13.9.4
     # via typer
-rpds-py==0.23.0
+rpds-py==0.23.1
     # via
     #   jsonschema
     #   referencing

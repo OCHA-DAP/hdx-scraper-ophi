@@ -342,7 +342,7 @@ class TestOPHI:
                     standardised_global,
                     standardised_global_trend,
                 )
-                rows = hapi_output.process("1234", "5678")
+                rows = hapi_output.process("12", ["3456", "7890"])
                 hapi_dataset_generator = HAPIDatasetGenerator(
                     configuration, rows
                 )

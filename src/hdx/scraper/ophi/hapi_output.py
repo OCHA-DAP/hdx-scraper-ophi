@@ -31,12 +31,14 @@ class HAPIOutput:
         )
         input_to_output = {}
         for header, hxltag in self._configuration["hxltags"].items():
-            input_to_output[header] = hxltag_to_header[hxltag]
+            input_to_output[header] = hxltag_to_header.get(hxltag)
 
         for row in rows.values():
             output_row = {}
-            for k in row:
-                output_row[input_to_output[k]] = row[k]
+            for header in row:
+                output_header = input_to_output[header]
+                if output_header is not None:
+                    output_row[output_header] = row[header]
             countryiso3 = output_row["location_code"]
             output_row["has_hrp"] = (
                 "Y" if Country.get_hrp_status_from_iso3(countryiso3) else "N"
