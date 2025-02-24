@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, List, Tuple
 
 from hdx.api.configuration import Configuration
 from hdx.location.adminlevel import AdminLevel
@@ -26,11 +26,11 @@ class Pipeline:
         self,
         configuration: Configuration,
         retriever: Retrieve,
+        adminone: AdminLevel,
     ) -> None:
         self._configuration = configuration
         self._retriever = retriever
-        self._adminone = AdminLevel(admin_level=1, retriever=self._retriever)
-        self._adminone.setup_from_url()
+        self._adminone = adminone
         self._standardised_global = {}
         self._standardised_global_trend = [{}, {}]
         self._standardised_countries = {}
@@ -80,7 +80,13 @@ class Pipeline:
         msg: str,
     ) -> None:
         start_date, end_date = self.process_date(countryiso3, date_range, row)
-        key = (countryiso3, admin1_code, admin1_name, start_date, end_date)
+        key = (
+            countryiso3,
+            admin1_code or "",
+            admin1_name or "",
+            start_date,
+            end_date,
+        )
         if key in global_dict:
             logger.error(f"Key {key} already exists in {msg}!")
             return
@@ -114,10 +120,15 @@ class Pipeline:
             countryiso3 = inrow["ISO country code"]
             if not countryiso3:
                 continue
+            methodology_number = self._configuration["methodology"][
+                "mpi_and_partial_indices"
+            ][-2:]
             row = {
                 "Country ISO3": countryiso3,
                 "Admin 1 PCode": "",
                 "Admin 1 Name": "",
+                "Survey": inrow["MPI data source Survey"],
+                "Methodology Note Number": methodology_number,
             }
             self.set_mpi(inheaders, inrow, row)
             date_range = inrow["MPI data source Year"]
@@ -155,10 +166,15 @@ class Pipeline:
                 continue
             admin1_name = inrow.get("Subnational  region")
             admin1_code, _ = self._adminone.get_pcode(countryiso3, admin1_name)
+            methodology_number = self._configuration["methodology"][
+                "mpi_and_partial_indices"
+            ][-2:]
             row = {
                 "Country ISO3": countryiso3,
                 "Admin 1 PCode": admin1_code,
                 "Admin 1 Name": admin1_name,
+                "Survey": inrow["MPI data source Survey"],
+                "Methodology Note Number": methodology_number,
             }
             self.set_mpi(inheaders, inrow, row)
             date_range = inrow["MPI data source Year"]
@@ -197,11 +213,16 @@ class Pipeline:
             countryiso3 = inrow["ISO country code"]
             if not countryiso3:
                 continue
+            methodology_number = self._configuration["methodology"][
+                "trend_over_time"
+            ][-2:]
             for i, timepoint in enumerate(self.timepoints):
                 row = {
                     "Country ISO3": countryiso3,
                     "Admin 1 PCode": "",
                     "Admin 1 Name": "",
+                    "Survey": inrow[f"MPI data source {timepoint} Survey"],
+                    "Methodology Note Number": methodology_number,
                 }
                 inheaders = inheaders_tn[i]
                 self.set_mpi(inheaders, inrow, row)
@@ -214,7 +235,7 @@ class Pipeline:
                     row,
                     self._standardised_global_trend[i],
                     self._standardised_countries_trend[i],
-                    "trends_subnational",
+                    "trends_national",
                 )
 
     def read_trends_subnational_data(
@@ -243,11 +264,16 @@ class Pipeline:
                 continue
             admin1_name = inrow["Region"]
             admin1_code, _ = self._adminone.get_pcode(countryiso3, admin1_name)
+            methodology_number = self._configuration["methodology"][
+                "trend_over_time"
+            ][-2:]
             for i, timepoint in enumerate(self.timepoints):
                 row = {
                     "Country ISO3": countryiso3,
                     "Admin 1 PCode": admin1_code,
                     "Admin 1 Name": admin1_name,
+                    "Survey": inrow[f"MPI data source {timepoint} Survey"],
+                    "Methodology Note Number": methodology_number,
                 }
                 inheaders = inheaders_tn[i]
                 self.set_mpi(inheaders, inrow, row)
@@ -299,17 +325,17 @@ class Pipeline:
 
         return mpi_national_path, mpi_subnational_path, trend_path
 
-    def get_standardised_global(self) -> Iterable:
-        return self._standardised_global.values()
+    def get_standardised_global(self) -> Dict:
+        return self._standardised_global
 
     def get_standardised_countries(self) -> Dict:
         return self._standardised_countries
 
-    def get_standardised_global_trend(self) -> Iterable:
+    def get_standardised_global_trend(self) -> Dict:
         self._standardised_global_trend[0].update(
             self._standardised_global_trend[1]
         )
-        return self._standardised_global_trend[0].values()
+        return self._standardised_global_trend[0]
 
     def get_standardised_countries_trend(self) -> Dict:
         for key, value in self._standardised_countries_trend[0].items():

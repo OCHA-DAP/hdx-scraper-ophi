@@ -1,6 +1,6 @@
 import logging
 from copy import copy
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, Optional
 
 from slugify import slugify
 
@@ -57,7 +57,7 @@ class DatasetGenerator:
         resource_name: str,
         resource_description: str,
         hxltags: Dict,
-        rows: List[Dict],
+        rows: Iterable,
         folder: str,
         filename: str,
     ) -> bool:
@@ -132,8 +132,8 @@ class DatasetGenerator:
     def generate_dataset(
         self,
         folder: str,
-        standardised_rows: Iterable,
-        standardised_trend_rows: Iterable,
+        standardised_rows: Dict,
+        standardised_trend_rows: Dict,
         countryiso3: str,
         countryname: str,
         date_range: Dict,
@@ -154,15 +154,7 @@ class DatasetGenerator:
             resource_name,
             resource_descriptions["standardised_mpi"],
             self._country_hxltags,
-            sorted(
-                standardised_rows,
-                key=lambda x: (
-                    x["Country ISO3"],
-                    x["Admin 1 PCode"] if x["Admin 1 PCode"] else "",
-                    x["Admin 1 Name"] if x["Admin 1 Name"] else "",
-                    x["End Date"],
-                ),
-            ),
+            (standardised_rows[key] for key in sorted(standardised_rows)),
             folder,
             filename,
         )
@@ -186,14 +178,9 @@ class DatasetGenerator:
             resource_name,
             resource_descriptions["standardised_trends"],
             self._country_hxltags,
-            sorted(
-                standardised_trend_rows,
-                key=lambda x: (
-                    x["Country ISO3"],
-                    x["Admin 1 PCode"] if x["Admin 1 PCode"] else "",
-                    x["Admin 1 Name"] if x["Admin 1 Name"] else "",
-                    x["End Date"],
-                ),
+            (
+                standardised_trend_rows[key]
+                for key in sorted(standardised_trend_rows)
             ),
             folder,
             filename,
@@ -205,8 +192,8 @@ class DatasetGenerator:
     def generate_global_dataset(
         self,
         folder: str,
-        standardised_rows: Iterable,
-        standardised_trend_rows: Iterable,
+        standardised_rows: Dict,
+        standardised_trend_rows: Dict,
         date_range: Dict,
     ) -> Optional[Dataset]:
         if not standardised_rows:

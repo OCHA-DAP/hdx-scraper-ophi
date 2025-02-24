@@ -33,8 +33,10 @@ hxltags:
   "Intensity of Deprivation": "#indicator+intensity_of_deprivation"
   "Vulnerable to Poverty": "#indicator+vulnerable_to_poverty"
   "In Severe Poverty": "#indicator+in_severe_poverty"
+  "Survey": "#meta+survey"
   "Start Date": "#date+start"
   "End Date": "#date+end"
+  "Methodology Note Number": "#meta+methodology+num"
 
 methodology:
   text: "The global MPI is a leading policy tool that applies the multidimensional poverty methodology developed by Alkire and Foster [(2011)](https://www.sciencedirect.com/science/article/abs/pii/S0047272710001660?via%3Dihub). The global MPI is the product of incidence of poverty (H) and the average intensity of poverty (A). More information on methodology can be found here: "
@@ -48,3 +50,36 @@ resource_descriptions:
   mpi_national: "This table shows the MPI and its partial indices"
   mpi_subnational: "This table shows the MPI and its partial indices disaggregated by subnational regions"
   trends: "This table shows global mpi harmonized level estimates and their changes over time"
+
+hapi_dataset:
+  name: "hdx-hapi-poverty-rate"
+  title: "HDX HAPI - Food Security, Nutrition & Poverty: Poverty Rate"
+  tags:
+    - "education"
+    - "health"
+    - "hxl"
+    - "indicators"
+    - "poverty"
+  dataset_source: "Oxford Poverty & Human Development Initiative"
+  license_id: "other-pd-nr"
+  resource:
+    name: "Global Food Security, Nutrition & Poverty: Poverty Rate"
+    description: "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/food_security_nutrition_and_poverty/#poverty-rate) for more information"
+    filename: "hdx_hapi_poverty_rate_global"
+    hxltags:
+      location_code: "#country+code"
+      has_hrp: "#meta+has_hrp"
+      in_gho: "#meta+in_gho"
+      provider_admin1_name: "#adm1+name+provider"
+      admin1_code: "#adm1+code"
+      admin1_name: "#adm1+name"
+      admin_level: "#adm+level"
+      mpi: "#indicator+mpi"
+      headcount_ratio: "#indicator+headcount_ratio"
+      intensity_of_deprivation: "#indicator+intensity_of_deprivation"
+      vulnerable_to_poverty: "#indicator+vulnerable_to_poverty"
+      in_severe_poverty: "#indicator+in_severe_poverty"
+      reference_period_start: "#date+start"
+      reference_period_end: "#date+end"
+      "dataset_hdx_id": "#meta+dataset_id"
+      "resource_hdx_id": "#meta+resource_id"
