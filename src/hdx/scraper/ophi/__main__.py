@@ -3,8 +3,6 @@
 import logging
 from os.path import expanduser, join
 
-from src.hdx.scraper.ophi.pipeline import Pipeline
-
 from hdx.api.configuration import Configuration
 from hdx.data.user import User
 from hdx.facades.infer_arguments import facade
@@ -14,6 +12,7 @@ from hdx.scraper.ophi._version import __version__
 from hdx.scraper.ophi.dataset_generator import DatasetGenerator
 from hdx.scraper.ophi.hapi_dataset_generator import HAPIDatasetGenerator
 from hdx.scraper.ophi.hapi_output import HAPIOutput
+from hdx.scraper.ophi.pipeline import Pipeline
 from hdx.utilities.downloader import Download
 from hdx.utilities.easy_logging import setup_logging
 from hdx.utilities.path import (

@@ -61,8 +61,8 @@ the file without committing by executing:
 
 ## Project
 
-[Hatch](https://hatch.pypa.io/) is used for project management. The project 
-can be built using: 
+[Hatch](https://hatch.pypa.io/) is used for project management. The project
+can be built using:
 
     hatch build
 
