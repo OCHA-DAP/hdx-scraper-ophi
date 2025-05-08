@@ -47,6 +47,7 @@ class HAPIDatasetGenerator:
         resourcedata = {
             "name": resource_name,
             "description": resource_config["description"],
+            "p_coded": True,
         }
         hxltags = resource_config["hxltags"]
         filename = resource_config["filename"]

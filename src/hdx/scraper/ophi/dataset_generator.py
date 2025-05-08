@@ -60,11 +60,14 @@ class DatasetGenerator:
         rows: Iterable,
         folder: str,
         filename: str,
+        p_coded: bool = None,
     ) -> bool:
         resourcedata = {
             "name": resource_name,
             "description": resource_description,
         }
+        if p_coded:
+            resourcedata["p_coded"] = p_coded
 
         headers = list(hxltags.keys())
         success, results = dataset.generate_resource_from_iterable(
@@ -157,6 +160,7 @@ class DatasetGenerator:
             (standardised_rows[key] for key in sorted(standardised_rows)),
             folder,
             filename,
+            p_coded=True,
         )
         if success is False:
             logger.warning(f"{name} has no data!")
@@ -184,6 +188,7 @@ class DatasetGenerator:
             ),
             folder,
             filename,
+            p_coded=True,
         )
         trend_over_time_methodology = methodology_info["trend_over_time"]
         dataset["methodology_other"] += f", {trend_over_time_methodology}"
