@@ -45,9 +45,7 @@ class DatasetGenerator:
 
     def load_showcase_links(self, retriever: Retrieve) -> Dict:
         url = self._configuration["showcaseinfo"]["urls"]
-        _, iterator = retriever.get_tabular_rows(
-            url, dict_form=True, format="csv"
-        )
+        _, iterator = retriever.get_tabular_rows(url, dict_form=True, format="csv")
         for row in iterator:
             self._showcase_links[row["Country code"]] = row["URL"]
 
@@ -178,10 +176,7 @@ class DatasetGenerator:
             resource_name,
             resource_descriptions["standardised_trends"],
             self._country_hxltags,
-            (
-                standardised_trend_rows[key]
-                for key in sorted(standardised_trend_rows)
-            ),
+            (standardised_trend_rows[key] for key in sorted(standardised_trend_rows)),
             folder,
             filename,
         )

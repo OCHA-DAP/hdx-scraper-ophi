@@ -45,9 +45,7 @@ class Pipeline:
             start_date, _ = parse_date_range(date_range[0])
             _, end_date = parse_date_range(date_range[1])
         else:
-            start_date, end_date = parse_date_range(
-                date_range[0], max_endtime=True
-            )
+            start_date, end_date = parse_date_range(date_range[0], max_endtime=True)
         row["Start Date"] = start_date
         row["End Date"] = end_date
 
@@ -213,9 +211,9 @@ class Pipeline:
             countryiso3 = inrow["ISO country code"]
             if not countryiso3:
                 continue
-            methodology_number = self._configuration["methodology"][
-                "trend_over_time"
-            ][-2:]
+            methodology_number = self._configuration["methodology"]["trend_over_time"][
+                -2:
+            ]
             for i, timepoint in enumerate(self.timepoints):
                 row = {
                     "Country ISO3": countryiso3,
@@ -264,9 +262,9 @@ class Pipeline:
                 continue
             admin1_name = inrow["Region"]
             admin1_code, _ = self._adminone.get_pcode(countryiso3, admin1_name)
-            methodology_number = self._configuration["methodology"][
-                "trend_over_time"
-            ][-2:]
+            methodology_number = self._configuration["methodology"]["trend_over_time"][
+                -2:
+            ]
             for i, timepoint in enumerate(self.timepoints):
                 row = {
                     "Country ISO3": countryiso3,
@@ -309,15 +307,11 @@ class Pipeline:
             url, "subnational-results-mpi.xlsx"
         )
         sheet = mpi_subnational["sheet"]
-        self.read_mpi_subnational_data(
-            mpi_subnational_path, format, sheet, headers
-        )
+        self.read_mpi_subnational_data(mpi_subnational_path, format, sheet, headers)
 
         trend_over_time = datasetinfo["trend_over_time"]
         url = trend_over_time["url"]
-        trend_path = self._retriever.download_file(
-            url, "trends-over-time-mpi.xlsx"
-        )
+        trend_path = self._retriever.download_file(url, "trends-over-time-mpi.xlsx")
         sheet = trend_over_time["national_sheet"]
         self.read_trends_national_data(trend_path, format, sheet, headers)
         sheet = trend_over_time["subnational_sheet"]
@@ -332,9 +326,7 @@ class Pipeline:
         return self._standardised_countries
 
     def get_standardised_global_trend(self) -> Dict:
-        self._standardised_global_trend[0].update(
-            self._standardised_global_trend[1]
-        )
+        self._standardised_global_trend[0].update(self._standardised_global_trend[1])
         return self._standardised_global_trend[0]
 
     def get_standardised_countries_trend(self) -> Dict:

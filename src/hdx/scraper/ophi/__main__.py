@@ -47,9 +47,7 @@ def main(
     if not User.check_current_user_organization_access(
         "00547685-9ded-4d69-9ca5-47d5278ead7c", "create_dataset"
     ):
-        raise PermissionError(
-            "API Token does not give access to OPHI organisation!"
-        )
+        raise PermissionError("API Token does not give access to OPHI organisation!")
     with wheretostart_tempdir_batch(lookup) as info:
         folder = info["folder"]
         batch = info["batch"]
@@ -74,9 +72,7 @@ def main(
             adminone.setup_from_url()
 
             pipeline = Pipeline(configuration, retriever, adminone)
-            mpi_national_path, mpi_subnational_path, trend_path = (
-                pipeline.process()
-            )
+            mpi_national_path, mpi_subnational_path, trend_path = pipeline.process()
             dataset_generator = DatasetGenerator(
                 configuration,
                 mpi_national_path,
@@ -84,13 +80,9 @@ def main(
                 trend_path,
             )
             standardised_global = pipeline.get_standardised_global()
-            standardised_global_trend = (
-                pipeline.get_standardised_global_trend()
-            )
+            standardised_global_trend = pipeline.get_standardised_global_trend()
             standardised_countries = pipeline.get_standardised_countries()
-            standardised_countries_trend = (
-                pipeline.get_standardised_countries_trend()
-            )
+            standardised_countries_trend = pipeline.get_standardised_countries_trend()
             date_ranges = pipeline.get_date_ranges()
             global_date_range = date_ranges["global"]
             countries_with_data = list(standardised_countries.keys())
@@ -116,13 +108,9 @@ def main(
             )
             rows = hapi_output.process(dataset_id, resource_ids)
             hapi_dataset_generator = HAPIDatasetGenerator(configuration, rows)
-            dataset = hapi_dataset_generator.generate_poverty_rate_dataset(
-                folder
-            )
+            dataset = hapi_dataset_generator.generate_poverty_rate_dataset(folder)
             dataset.add_country_locations(countries_with_data)
-            dataset.set_time_period(
-                time_period["startdate"], time_period["enddate"]
-            )
+            dataset.set_time_period(time_period["startdate"], time_period["enddate"])
             update_dataset(dataset, "hdx_hapi_dataset_static.yaml")
 
             if create_country_datasets:
@@ -131,11 +119,9 @@ def main(
                     countryiso3,
                     standardised_country,
                 ) in standardised_countries.items():
-                    countryname = Country.get_country_name_from_iso3(
-                        countryiso3
-                    )
-                    standardised_country_trend = (
-                        standardised_countries_trend.get(countryiso3, {})
+                    countryname = Country.get_country_name_from_iso3(countryiso3)
+                    standardised_country_trend = standardised_countries_trend.get(
+                        countryiso3, {}
                     )
                     dataset = dataset_generator.generate_dataset(
                         folder,

@@ -91,9 +91,7 @@ class TestOPHI:
                 adminone.setup_from_url()
 
                 pipeline = Pipeline(configuration, retriever, adminone)
-                mpi_national_path, mpi_subnational_path, trend_path = (
-                    pipeline.process()
-                )
+                mpi_national_path, mpi_subnational_path, trend_path = pipeline.process()
                 dataset_generator = DatasetGenerator(
                     configuration,
                     mpi_national_path,
@@ -101,9 +99,7 @@ class TestOPHI:
                     trend_path,
                 )
                 standardised_global = pipeline.get_standardised_global()
-                standardised_global_trend = (
-                    pipeline.get_standardised_global_trend()
-                )
+                standardised_global_trend = pipeline.get_standardised_global_trend()
                 standardised_countries = pipeline.get_standardised_countries()
                 standardised_countries_trend = (
                     pipeline.get_standardised_countries_trend()
@@ -343,12 +339,8 @@ class TestOPHI:
                     standardised_global_trend,
                 )
                 rows = hapi_output.process("12", ["3456", "7890"])
-                hapi_dataset_generator = HAPIDatasetGenerator(
-                    configuration, rows
-                )
-                dataset = hapi_dataset_generator.generate_poverty_rate_dataset(
-                    tempdir
-                )
+                hapi_dataset_generator = HAPIDatasetGenerator(configuration, rows)
+                dataset = hapi_dataset_generator.generate_poverty_rate_dataset(tempdir)
                 assert dataset == {
                     "data_update_frequency": "365",
                     "dataset_preview": "no_preview",
@@ -493,9 +485,7 @@ class TestOPHI:
                     actual_file = join(tempdir, filename)
                     assert_files_same(expected_file, actual_file)
                 dataset_generator.load_showcase_links(retriever)
-                showcase = dataset_generator.generate_showcase(
-                    countryiso3, countryname
-                )
+                showcase = dataset_generator.generate_showcase(countryiso3, countryname)
                 assert showcase == {
                     "image_url": "https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-ophi/main/ophi_mpi.jpg",
                     "name": "afghanistan-mpi-showcase",
