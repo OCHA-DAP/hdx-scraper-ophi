@@ -8,6 +8,7 @@ from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
 from hdx.data.showcase import Showcase
+from hdx.scraper.ophi.dynamic_metadata import DynamicMetadata
 from hdx.utilities.retriever import Retrieve
 
 logger = logging.getLogger(__name__)
@@ -31,11 +32,13 @@ class DatasetGenerator:
     def __init__(
         self,
         configuration: Configuration,
+        metadata: DynamicMetadata,
         mpi_national_path: str,
         mpi_subnational_path: str,
         trend_path: str,
     ) -> None:
         self._configuration = configuration
+        self._metadata = metadata
         self._showcase_links = {}
         self._mpi_national_path = mpi_national_path
         self._mpi_subnational_path = mpi_subnational_path
@@ -92,7 +95,6 @@ class DatasetGenerator:
         )
         dataset.set_maintainer("196196be-6037-4488-8b71-d786adf4c081")
         dataset.set_organization("00547685-9ded-4d69-9ca5-47d5278ead7c")
-        dataset.set_expected_update_frequency("Every year")
         dataset.add_tags(self.tags)
         dataset.set_subnational(True)
         return dataset
@@ -141,6 +143,7 @@ class DatasetGenerator:
         title = self.get_title(countryname)
         name = self.get_name(countryname)
         dataset = self.generate_dataset_metadata(title, name)
+        dataset["notes"] = self._metadata.get_description(countryiso3)
         dataset.set_time_period(date_range["start"], date_range["end"])
         methodology_info = self._configuration["methodology"]
         resource_descriptions = self._configuration["resource_descriptions"]
@@ -161,9 +164,9 @@ class DatasetGenerator:
             return None
 
         methodology_text = methodology_info["text"]
-        mpi_and_partial_indices_methodology = methodology_info[
+        mpi_and_partial_indices_methodology = self._metadata.get_methodology_note(
             "mpi_and_partial_indices"
-        ]
+        )
         dataset["methodology_other"] = (
             f"{methodology_text} {mpi_and_partial_indices_methodology}"
         )
@@ -180,7 +183,9 @@ class DatasetGenerator:
             folder,
             filename,
         )
-        trend_over_time_methodology = methodology_info["trend_over_time"]
+        trend_over_time_methodology = self._metadata.get_methodology_note(
+            "trend_over_time"
+        )
         dataset["methodology_other"] += f", {trend_over_time_methodology}"
         return dataset
 
@@ -201,6 +206,7 @@ class DatasetGenerator:
             "Global",
             date_range,
         )
+        dataset.set_expected_update_frequency("Every year")
 
         resource_descriptions = self._configuration["resource_descriptions"]
         resourcedata = {

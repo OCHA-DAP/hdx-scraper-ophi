@@ -9,6 +9,7 @@ from hdx.data.vocabulary import Vocabulary
 from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
 from hdx.scraper.ophi.dataset_generator import DatasetGenerator
+from hdx.scraper.ophi.dynamic_metadata import DynamicMetadata
 from hdx.scraper.ophi.hapi_dataset_generator import HAPIDatasetGenerator
 from hdx.scraper.ophi.hapi_output import HAPIOutput
 from hdx.scraper.ophi.pipeline import Pipeline
@@ -89,15 +90,18 @@ class TestOPHI:
                 )
                 adminone = AdminLevel(admin_level=1, retriever=retriever)
                 adminone.setup_from_url()
+                metadata = DynamicMetadata(configuration, retriever)
 
-                pipeline = Pipeline(configuration, retriever, adminone)
+                pipeline = Pipeline(configuration, retriever, adminone, metadata)
                 mpi_national_path, mpi_subnational_path, trend_path = pipeline.process()
                 dataset_generator = DatasetGenerator(
                     configuration,
+                    metadata,
                     mpi_national_path,
                     mpi_subnational_path,
                     trend_path,
                 )
+
                 standardised_global = pipeline.get_standardised_global()
                 standardised_global_trend = pipeline.get_standardised_global_trend()
                 standardised_countries = pipeline.get_standardised_countries()
@@ -232,6 +236,7 @@ class TestOPHI:
                     "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
                     "methodology_other": "The global MPI is a leading policy tool that applies the multidimensional poverty methodology developed by Alkire and Foster [(2011)](https://www.sciencedirect.com/science/article/abs/pii/S0047272710001660?via%3Dihub). The global MPI is the product of incidence of poverty (H) and the average intensity of poverty (A). More information on methodology can be found here:  https://ophi.org.uk/publications/MN-59, https://ophi.org.uk/publications/MN-60",
                     "name": "global-mpi",
+                    "notes": "The global Multidimensional Poverty Index provides the only comprehensive measure available for non-income poverty, which has become a critical underpinning of the SDGs. Critically the MPI comprises variables that are already reported under the Demographic Health Surveys (DHS), the Multi-Indicator Cluster Surveys (MICS) and in some cases national surveys. The most recent survey for this country is DHS 2022-2023. This survey is harmonised with two earlier DHS surveys, 2011 and 2003. The subnational multidimensional poverty data from the [data tables](https://ophi.org.uk/global-mpi-archive) are published by the Oxford Poverty and Human Development Initiative (OPHI), University of Oxford. The global Multidimensional Poverty Index (MPI) measures multidimensional poverty in over 100 developing countries, using internationally comparable datasets and is updated annually. The measure captures the severe deprivations that each person faces at the same time using information from 10 indicators, which are grouped into three equally weighted dimensions: health, education, and living standards. The global MPI methodology is detailed in Alkire, Kanagaratnam & Suppa (2024)",
                     "owner_org": "00547685-9ded-4d69-9ca5-47d5278ead7c",
                     "subnational": "1",
                     "tags": [
@@ -403,11 +408,11 @@ class TestOPHI:
                     date_ranges[countryiso3],
                 )
                 assert dataset == {
-                    "data_update_frequency": "365",
                     "dataset_date": "[2015-01-01T00:00:00 TO 2023-12-31T23:59:59]",
                     "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
                     "methodology_other": "The global MPI is a leading policy tool that applies the multidimensional poverty methodology developed by Alkire and Foster [(2011)](https://www.sciencedirect.com/science/article/abs/pii/S0047272710001660?via%3Dihub). The global MPI is the product of incidence of poverty (H) and the average intensity of poverty (A). More information on methodology can be found here:  https://ophi.org.uk/publications/MN-59, https://ophi.org.uk/publications/MN-60",
                     "name": "afghanistan-mpi",
+                    "notes": "The global Multidimensional Poverty Index provides the only comprehensive measure available for non-income poverty, which has become a critical underpinning of the SDGs. Critically the MPI comprises variables that are already reported under the Demographic Health Surveys (DHS), the Multi-Indicator Cluster Surveys (MICS) and in some cases national surveys. The most recent survey for this country is DHS 2022-2023. This survey is harmonised with two earlier DHS surveys, 2011 and 2003. The subnational multidimensional poverty data from the [data tables](https://ophi.org.uk/global-mpi-archive) are published by the Oxford Poverty and Human Development Initiative (OPHI), University of Oxford. The global Multidimensional Poverty Index (MPI) measures multidimensional poverty in over 100 developing countries, using internationally comparable datasets and is updated annually. The measure captures the severe deprivations that each person faces at the same time using information from 10 indicators, which are grouped into three equally weighted dimensions: health, education, and living standards. The global MPI methodology is detailed in Alkire, Kanagaratnam & Suppa (2024)",
                     "owner_org": "00547685-9ded-4d69-9ca5-47d5278ead7c",
                     "subnational": "1",
                     "tags": [
