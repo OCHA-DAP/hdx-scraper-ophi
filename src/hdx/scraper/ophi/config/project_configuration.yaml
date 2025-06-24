@@ -41,7 +41,7 @@ hxltags:
   "Methodology Note Number": "#meta+methodology+num"
 
 methodology:
-  text: "The global MPI is a leading policy tool that applies the multidimensional poverty methodology developed by Alkire and Foster [(2011)](https://www.sciencedirect.com/science/article/abs/pii/S0047272710001660?via%3Dihub). The global MPI is the product of incidence of poverty (H) and the average intensity of poverty (A). More information on methodology can be found here: "
+  text: "The global MPI is a leading policy tool that applies the multidimensional poverty methodology developed by Alkire and Foster [(2011)](https://www.sciencedirect.com/science/article/abs/pii/S0047272710001660?via%3Dihub). The global MPI is the product of incidence of poverty (H) and the average intensity of poverty (A). More information on methodology can be found"
 
 resource_descriptions:
   standardised_mpi: "This resource contains standardised MPI estimates by admin one unit and also shows the proportion of people who are MPI poor and experience deprivations in each of the indicators by admin one unit."

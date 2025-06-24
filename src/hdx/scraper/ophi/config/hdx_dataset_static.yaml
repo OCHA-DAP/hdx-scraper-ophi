@@ -1,12 +1,5 @@
 license_id: "other-pd-nr"
 methodology: "Other"
-methodology_other: |
-  The global MPI is a leading policy tool that applies the multidimensional poverty
-  methodology developed by Alkire and Foster
-  [(2011)](https://www.sciencedirect.com/science/article/abs/pii/S0047272710001660?via%3Dihub).
-  The global MPI is the product of incidence of poverty (H) and the average intensity of poverty (A).
-
-  More information can be found [here](https://ophi.org.uk/what-data-do-we-offer)
 dataset_source: >
   Oxford Poverty and Human Development Initiative (OPHI), University of Oxford
 caveats: ""

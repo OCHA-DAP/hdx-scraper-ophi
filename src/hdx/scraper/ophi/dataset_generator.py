@@ -168,9 +168,10 @@ class DatasetGenerator:
             "mpi_and_partial_indices"
         )
         dataset["methodology_other"] = (
-            f"{methodology_text} {mpi_and_partial_indices_methodology}"
+            f"{methodology_text} [here]({mpi_and_partial_indices_methodology})"
         )
         if not standardised_trend_rows:
+            dataset["methodology_other"] += "."
             return dataset
         resource_name = f"{countryname} MPI Trends Over Time"
         filename = f"{countryiso3}_mpi_trends.csv"
@@ -186,7 +187,7 @@ class DatasetGenerator:
         trend_over_time_methodology = self._metadata.get_methodology_note(
             "trend_over_time"
         )
-        dataset["methodology_other"] += f", {trend_over_time_methodology}"
+        dataset["methodology_other"] += f" and [here]({trend_over_time_methodology})."
         return dataset
 
     def generate_global_dataset(

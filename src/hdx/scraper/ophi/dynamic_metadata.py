@@ -23,7 +23,7 @@ class DynamicMetadata:
         description = self._description["default"]
         additional_notes = self._description.get(countryiso3)
         if additional_notes:
-            description += f"  \n{additional_notes}"
+            description += f"  \n  \n{additional_notes}"
         return description
 
     def get_methodology_note(self, applies: str) -> str:
