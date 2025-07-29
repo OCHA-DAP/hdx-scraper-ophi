@@ -11,7 +11,7 @@ attrs==25.3.0
     #   jsonlines
     #   jsonschema
     #   referencing
-certifi==2025.6.15
+certifi==2025.7.14
     # via
     #   -c requirements.txt
     #   requests
@@ -31,7 +31,7 @@ click==8.2.1
     # via
     #   -c requirements.txt
     #   typer
-coverage==7.9.1
+coverage==7.10.1
     # via pytest-cov
 defopt==7.0.0
     # via
@@ -46,7 +46,7 @@ docopt==0.6.2
     #   -c requirements.txt
     #   ckanapi
     #   num2words
-docutils==0.21.2
+docutils==0.22
     # via
     #   -c requirements.txt
     #   defopt
@@ -62,16 +62,16 @@ frictionless==5.18.1
     # via
     #   -c requirements.txt
     #   hdx-python-utilities
-hdx-python-api==6.4.5
+hdx-python-api==6.4.6
     # via
     #   -c requirements.txt
     #   hdx-scraper-ophi (pyproject.toml)
-hdx-python-country==3.9.4
+hdx-python-country==3.9.6
     # via
     #   -c requirements.txt
     #   hdx-scraper-ophi (pyproject.toml)
     #   hdx-python-api
-hdx-python-utilities==3.8.7
+hdx-python-utilities==3.8.8
     # via
     #   -c requirements.txt
     #   hdx-scraper-ophi (pyproject.toml)
@@ -112,7 +112,7 @@ jsonpath-ng==1.7.0
     # via
     #   -c requirements.txt
     #   libhxl
-jsonschema==4.24.0
+jsonschema==4.25.0
     # via
     #   -c requirements.txt
     #   frictionless
@@ -164,7 +164,7 @@ openpyxl==3.1.5
     #   hdx-python-utilities
 packaging==25.0
     # via pytest
-petl==1.7.16
+petl==1.7.17
     # via
     #   -c requirements.txt
     #   frictionless
@@ -256,11 +256,11 @@ rfc3986==2.0.0
     # via
     #   -c requirements.txt
     #   frictionless
-rich==14.0.0
+rich==14.1.0
     # via
     #   -c requirements.txt
     #   typer
-rpds-py==0.25.1
+rpds-py==0.26.0
     # via
     #   -c requirements.txt
     #   jsonschema
@@ -328,7 +328,7 @@ typer==0.16.0
     # via
     #   -c requirements.txt
     #   frictionless
-typing-extensions==4.14.0
+typing-extensions==4.14.1
     # via
     #   -c requirements.txt
     #   frictionless

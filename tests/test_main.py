@@ -231,7 +231,7 @@ class TestOPHI:
                     "ZWE",
                 ]
                 assert dataset == {
-                    "data_update_frequency": "365",
+                    "data_update_frequency": "-2",
                     "dataset_date": "[2001-01-01T00:00:00 TO 2023-12-31T23:59:59]",
                     "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
                     "methodology_other": "The global MPI is a leading policy tool that applies the multidimensional poverty methodology developed by Alkire and Foster [(2011)](https://www.sciencedirect.com/science/article/abs/pii/S0047272710001660?via%3Dihub). The global MPI is the product of incidence of poverty (H) and the average intensity of poverty (A). More information on methodology can be found [here](https://ophi.org.uk/publications/MN-59) and [here](https://ophi.org.uk/publications/MN-60).",
@@ -285,7 +285,7 @@ class TestOPHI:
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
                     ],
-                    "title": "Global Multi Dimensional Poverty Index",
+                    "title": "Global Multidimensional Poverty Index",
                 }
                 assert dataset.get_resources() == [
                     {
@@ -461,7 +461,7 @@ class TestOPHI:
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
                     ],
-                    "title": "Afghanistan Multi Dimensional Poverty Index",
+                    "title": "Afghanistan Multidimensional Poverty Index",
                 }
                 assert dataset.get_resources() == [
                     {
@@ -543,6 +543,6 @@ class TestOPHI:
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
                     ],
-                    "title": "Afghanistan Multi Dimensional Poverty Index",
+                    "title": "Afghanistan Multidimensional Poverty Index",
                     "url": "https://ophi.org.uk/media/45972/download",
                 }

@@ -101,7 +101,7 @@ class DatasetGenerator:
 
     @staticmethod
     def get_title(countryname: str) -> str:
-        return f"{countryname} Multi Dimensional Poverty Index"
+        return f"{countryname} Multidimensional Poverty Index"
 
     @staticmethod
     def get_name(countryname: str) -> str:
@@ -207,7 +207,7 @@ class DatasetGenerator:
             "Global",
             date_range,
         )
-        dataset.set_expected_update_frequency("Every year")
+        dataset.set_expected_update_frequency("As needed")
 
         resource_descriptions = self._configuration["resource_descriptions"]
         resourcedata = {
