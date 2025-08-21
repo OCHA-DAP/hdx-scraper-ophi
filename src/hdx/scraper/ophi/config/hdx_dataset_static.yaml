@@ -8,5 +8,5 @@ notes: |
   The subnational multidimensional poverty data from the [data tables](https://ophi.org.uk/global-mpi-archive) are published by the Oxford Poverty and Human Development Initiative (OPHI), University of Oxford. For the details of the global MPI methodology, please see the latest Methodological Notes [found here](https://ophi.org.uk/publications-table?title=&field_authors_value=&field_publication_type_target_id=11&publication_year_filter=All&field_keywords_value=&field_country_target_id=All&field_region_target_id=All).
 dataset_source: >
   Oxford Poverty and Human Development Initiative (OPHI), University of Oxford
-caveats: "The resource modified date relates to the date the data was uploaded by HDX, not the date the survey-specific estimates were updated."
+caveats: "The resource modified date relates to the date the data was uploaded to HDX, not the date the survey-specific estimates were updated."
 private: False  # has to be True or False
