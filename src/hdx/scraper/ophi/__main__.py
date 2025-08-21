@@ -10,7 +10,6 @@ from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
 from hdx.scraper.ophi._version import __version__
 from hdx.scraper.ophi.dataset_generator import DatasetGenerator
-from hdx.scraper.ophi.dynamic_metadata import DynamicMetadata
 from hdx.scraper.ophi.hapi_dataset_generator import HAPIDatasetGenerator
 from hdx.scraper.ophi.hapi_output import HAPIOutput
 from hdx.scraper.ophi.pipeline import Pipeline
@@ -71,13 +70,11 @@ def main(
             )
             adminone = AdminLevel(admin_level=1, retriever=retriever)
             adminone.setup_from_url()
-            metadata = DynamicMetadata(configuration, retriever)
 
-            pipeline = Pipeline(configuration, retriever, adminone, metadata)
+            pipeline = Pipeline(configuration, retriever, adminone)
             mpi_national_path, mpi_subnational_path, trend_path = pipeline.process()
             dataset_generator = DatasetGenerator(
                 configuration,
-                metadata,
                 mpi_national_path,
                 mpi_subnational_path,
                 trend_path,
@@ -118,10 +115,8 @@ def main(
 
             if create_country_datasets:
                 dataset_generator.load_showcase_links(retriever)
-                for (
-                    countryiso3,
-                    standardised_country,
-                ) in standardised_countries.items():
+                for countryiso3 in sorted(standardised_countries):
+                    standardised_country = standardised_countries[countryiso3]
                     countryname = Country.get_country_name_from_iso3(countryiso3)
                     standardised_country_trend = standardised_countries_trend.get(
                         countryiso3, {}

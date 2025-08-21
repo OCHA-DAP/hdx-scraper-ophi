@@ -4,7 +4,6 @@ from typing import Dict, List, Tuple
 
 from hdx.api.configuration import Configuration
 from hdx.location.adminlevel import AdminLevel
-from hdx.scraper.ophi.dynamic_metadata import DynamicMetadata
 from hdx.utilities.dateparse import parse_date_range
 from hdx.utilities.dictandlist import dict_of_dicts_add
 from hdx.utilities.retriever import Retrieve
@@ -28,12 +27,10 @@ class Pipeline:
         configuration: Configuration,
         retriever: Retrieve,
         adminone: AdminLevel,
-        metadata: DynamicMetadata,
     ) -> None:
         self._configuration = configuration
         self._retriever = retriever
         self._adminone = adminone
-        self._metadata = metadata
         self._standardised_global = {}
         self._standardised_global_trend = [{}, {}]
         self._standardised_countries = {}
@@ -121,15 +118,11 @@ class Pipeline:
             countryiso3 = inrow["ISO country code"]
             if not countryiso3:
                 continue
-            methodology_number = self._metadata.get_methodology_note(
-                "mpi_and_partial_indices"
-            )[-2:]
             row = {
                 "Country ISO3": countryiso3,
                 "Admin 1 PCode": "",
                 "Admin 1 Name": "",
                 "Survey": inrow["MPI data source Survey"],
-                "Methodology Note Number": methodology_number,
             }
             self.set_mpi(inheaders, inrow, row)
             date_range = inrow["MPI data source Year"]
@@ -167,15 +160,11 @@ class Pipeline:
                 continue
             admin1_name = inrow.get("Subnational  region")
             admin1_code, _ = self._adminone.get_pcode(countryiso3, admin1_name)
-            methodology_number = self._metadata.get_methodology_note(
-                "mpi_and_partial_indices"
-            )[-2:]
             row = {
                 "Country ISO3": countryiso3,
                 "Admin 1 PCode": admin1_code,
                 "Admin 1 Name": admin1_name,
                 "Survey": inrow["MPI data source Survey"],
-                "Methodology Note Number": methodology_number,
             }
             self.set_mpi(inheaders, inrow, row)
             date_range = inrow["MPI data source Year"]
@@ -214,16 +203,12 @@ class Pipeline:
             countryiso3 = inrow["ISO country code"]
             if not countryiso3:
                 continue
-            methodology_number = self._metadata.get_methodology_note("trend_over_time")[
-                -2:
-            ]
             for i, timepoint in enumerate(self.timepoints):
                 row = {
                     "Country ISO3": countryiso3,
                     "Admin 1 PCode": "",
                     "Admin 1 Name": "",
                     "Survey": inrow[f"MPI data source {timepoint} Survey"],
-                    "Methodology Note Number": methodology_number,
                 }
                 inheaders = inheaders_tn[i]
                 self.set_mpi(inheaders, inrow, row)
@@ -265,16 +250,12 @@ class Pipeline:
                 continue
             admin1_name = inrow["Region"]
             admin1_code, _ = self._adminone.get_pcode(countryiso3, admin1_name)
-            methodology_number = self._metadata.get_methodology_note("trend_over_time")[
-                -2:
-            ]
             for i, timepoint in enumerate(self.timepoints):
                 row = {
                     "Country ISO3": countryiso3,
                     "Admin 1 PCode": admin1_code,
                     "Admin 1 Name": admin1_name,
                     "Survey": inrow[f"MPI data source {timepoint} Survey"],
-                    "Methodology Note Number": methodology_number,
                 }
                 inheaders = inheaders_tn[i]
                 self.set_mpi(inheaders, inrow, row)
