@@ -291,8 +291,6 @@ class TestOPHI:
                         "one unit.",
                         "format": "csv",
                         "name": "Global MPI and Partial Indices",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                     {
                         "description": "This resource contains standardised MPI estimates and their "
@@ -302,31 +300,23 @@ class TestOPHI:
                         "indicators by admin one unit.",
                         "format": "csv",
                         "name": "Global MPI Trends Over Time",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                     {
                         "description": "This table shows the MPI and its partial indices",
                         "format": "xlsx",
                         "name": "MPI and Partial Indices National Database",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                     {
                         "description": "This table shows the MPI and its partial indices "
                         "disaggregated by subnational regions",
                         "format": "xlsx",
                         "name": "MPI and Partial Indices Subnational Database",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                     {
                         "description": "This table shows global mpi harmonized level estimates and "
                         "their changes over time",
                         "format": "xlsx",
                         "name": "Trends Over Time MPI Database",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                 ]
                 for filename in ("global_mpi.csv", "global_mpi_trends.csv"):
@@ -380,8 +370,6 @@ class TestOPHI:
                     "name": "Global Food Security, Nutrition & Poverty: Poverty Rate",
                     "description": "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/food_security_nutrition_and_poverty/#poverty-rate) for more information",
                     "format": "csv",
-                    "resource_type": "file.upload",
-                    "url_type": "upload",
                     "dataset_preview_enabled": "False",
                 }
 
@@ -467,8 +455,6 @@ class TestOPHI:
                         "one unit.",
                         "format": "csv",
                         "name": "Afghanistan MPI and Partial Indices",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                     {
                         "description": "This resource contains standardised MPI estimates and their "
@@ -478,8 +464,6 @@ class TestOPHI:
                         "indicators by admin one unit.",
                         "format": "csv",
                         "name": "Afghanistan MPI Trends Over Time",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                 ]
                 for filename in ("AFG_mpi.csv", "AFG_mpi_trends.csv"):
