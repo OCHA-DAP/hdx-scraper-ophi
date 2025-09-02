@@ -91,19 +91,16 @@ class TestOPHI:
                 adminone.setup_from_url()
 
                 pipeline = Pipeline(configuration, retriever, adminone)
-                mpi_national_path, mpi_subnational_path, trend_path = (
-                    pipeline.process()
-                )
+                mpi_national_path, mpi_subnational_path, trend_path = pipeline.process()
                 dataset_generator = DatasetGenerator(
                     configuration,
                     mpi_national_path,
                     mpi_subnational_path,
                     trend_path,
                 )
+
                 standardised_global = pipeline.get_standardised_global()
-                standardised_global_trend = (
-                    pipeline.get_standardised_global_trend()
-                )
+                standardised_global_trend = pipeline.get_standardised_global_trend()
                 standardised_countries = pipeline.get_standardised_countries()
                 standardised_countries_trend = (
                     pipeline.get_standardised_countries_trend()
@@ -231,10 +228,9 @@ class TestOPHI:
                     "ZWE",
                 ]
                 assert dataset == {
-                    "data_update_frequency": "365",
+                    "data_update_frequency": "-2",
                     "dataset_date": "[2001-01-01T00:00:00 TO 2023-12-31T23:59:59]",
                     "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
-                    "methodology_other": "The global MPI is a leading policy tool that applies the multidimensional poverty methodology developed by Alkire and Foster [(2011)](https://www.sciencedirect.com/science/article/abs/pii/S0047272710001660?via%3Dihub). The global MPI is the product of incidence of poverty (H) and the average intensity of poverty (A). More information on methodology can be found here:  https://ophi.org.uk/publications/MN-59, https://ophi.org.uk/publications/MN-60",
                     "name": "global-mpi",
                     "owner_org": "00547685-9ded-4d69-9ca5-47d5278ead7c",
                     "subnational": "1",
@@ -284,53 +280,45 @@ class TestOPHI:
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
                     ],
-                    "title": "Global Multi Dimensional Poverty Index",
+                    "title": "Global Multidimensional Poverty Index",
                 }
                 assert dataset.get_resources() == [
                     {
-                        "description": "This resource contains standardised MPI estimates by admin "
-                        "one unit and also shows the proportion of people who are MPI "
-                        "poor and experience deprivations in each of the indicators "
-                        "by admin one unit.",
+                        "description": "This resource contains standardised MPI estimates by "
+                        "first-level administrative unit (e.g. state, province) and "
+                        "also shows the proportion of people who are MPI poor and "
+                        "experience deprivations in each of the indicators by admin "
+                        "one unit.",
                         "format": "csv",
                         "name": "Global MPI and Partial Indices",
                         "p_coded": True,
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                     {
                         "description": "This resource contains standardised MPI estimates and their "
-                        "changes over time by admin one unit and also shows the "
-                        "proportion of people who are MPI poor and experience "
-                        "deprivations in each of the indicators by admin one unit.",
+                        "changes over time by first-level administrative unit (e.g. "
+                        "state, province) and also shows the proportion of people who "
+                        "are MPI poor and experience deprivations in each of the "
+                        "indicators by admin one unit.",
                         "format": "csv",
                         "name": "Global MPI Trends Over Time",
                         "p_coded": True,
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                     {
                         "description": "This table shows the MPI and its partial indices",
                         "format": "xlsx",
                         "name": "MPI and Partial Indices National Database",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                     {
                         "description": "This table shows the MPI and its partial indices "
                         "disaggregated by subnational regions",
                         "format": "xlsx",
                         "name": "MPI and Partial Indices Subnational Database",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                     {
                         "description": "This table shows global mpi harmonized level estimates and "
                         "their changes over time",
                         "format": "xlsx",
                         "name": "Trends Over Time MPI Database",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                 ]
                 for filename in ("global_mpi.csv", "global_mpi_trends.csv"):
@@ -345,12 +333,8 @@ class TestOPHI:
                     standardised_global_trend,
                 )
                 rows = hapi_output.process("12", ["3456", "7890"])
-                hapi_dataset_generator = HAPIDatasetGenerator(
-                    configuration, rows
-                )
-                dataset = hapi_dataset_generator.generate_poverty_rate_dataset(
-                    tempdir
-                )
+                hapi_dataset_generator = HAPIDatasetGenerator(configuration, rows)
+                dataset = hapi_dataset_generator.generate_poverty_rate_dataset(tempdir)
                 assert dataset == {
                     "data_update_frequency": "365",
                     "dataset_preview": "no_preview",
@@ -389,8 +373,6 @@ class TestOPHI:
                     "description": "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/food_security_nutrition_and_poverty/#poverty-rate) for more information",
                     "p_coded": True,
                     "format": "csv",
-                    "resource_type": "file.upload",
-                    "url_type": "upload",
                     "dataset_preview_enabled": "False",
                 }
 
@@ -414,10 +396,8 @@ class TestOPHI:
                     date_ranges[countryiso3],
                 )
                 assert dataset == {
-                    "data_update_frequency": "365",
                     "dataset_date": "[2015-01-01T00:00:00 TO 2023-12-31T23:59:59]",
                     "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
-                    "methodology_other": "The global MPI is a leading policy tool that applies the multidimensional poverty methodology developed by Alkire and Foster [(2011)](https://www.sciencedirect.com/science/article/abs/pii/S0047272710001660?via%3Dihub). The global MPI is the product of incidence of poverty (H) and the average intensity of poverty (A). More information on methodology can be found here:  https://ophi.org.uk/publications/MN-59, https://ophi.org.uk/publications/MN-60",
                     "name": "afghanistan-mpi",
                     "owner_org": "00547685-9ded-4d69-9ca5-47d5278ead7c",
                     "subnational": "1",
@@ -467,30 +447,28 @@ class TestOPHI:
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
                     ],
-                    "title": "Afghanistan Multi Dimensional Poverty Index",
+                    "title": "Afghanistan Multidimensional Poverty Index",
                 }
                 assert dataset.get_resources() == [
                     {
-                        "description": "This resource contains standardised MPI estimates by admin "
-                        "one unit and also shows the proportion of people who are MPI "
-                        "poor and experience deprivations in each of the indicators "
-                        "by admin one unit.",
+                        "description": "This resource contains standardised MPI estimates by "
+                        "first-level administrative unit (e.g. state, province) and "
+                        "also shows the proportion of people who are MPI poor and "
+                        "experience deprivations in each of the indicators by admin "
+                        "one unit.",
                         "format": "csv",
                         "name": "Afghanistan MPI and Partial Indices",
                         "p_coded": True,
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                     {
                         "description": "This resource contains standardised MPI estimates and their "
-                        "changes over time by admin one unit and also shows the "
-                        "proportion of people who are MPI poor and experience "
-                        "deprivations in each of the indicators by admin one unit.",
+                        "changes over time by first-level administrative unit (e.g. "
+                        "state, province) and also shows the proportion of people who "
+                        "are MPI poor and experience deprivations in each of the "
+                        "indicators by admin one unit.",
                         "format": "csv",
                         "name": "Afghanistan MPI Trends Over Time",
                         "p_coded": True,
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                     },
                 ]
                 for filename in ("AFG_mpi.csv", "AFG_mpi_trends.csv"):
@@ -498,9 +476,7 @@ class TestOPHI:
                     actual_file = join(tempdir, filename)
                     assert_files_same(expected_file, actual_file)
                 dataset_generator.load_showcase_links(retriever)
-                showcase = dataset_generator.generate_showcase(
-                    countryiso3, countryname
-                )
+                showcase = dataset_generator.generate_showcase(countryiso3, countryname)
                 assert showcase == {
                     "image_url": "https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-ophi/main/ophi_mpi.jpg",
                     "name": "afghanistan-mpi-showcase",
@@ -553,6 +529,6 @@ class TestOPHI:
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
                     ],
-                    "title": "Afghanistan Multi Dimensional Poverty Index",
+                    "title": "Afghanistan Multidimensional Poverty Index",
                     "url": "https://ophi.org.uk/media/45972/download",
                 }

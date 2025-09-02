@@ -1,34 +1,50 @@
-name: Publish to PyPI
+name: Publish Docker Image
 
 on:
   release:
     types: [published]
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Get history and tags for versioning to work
-      run: |
-        git fetch --prune --unshallow
-        git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-    - name: Install Hatch
-      uses: pypa/hatch@install
-    - name: Build with hatch
-      run: |
-        hatch build
-    - name: Publish with hatch
-      env:
-        HATCH_INDEX_USER: ${{secrets.HATCH_INDEX_USER}}
-        HATCH_INDEX_AUTH: ${{secrets.HATCH_INDEX_AUTH}}
-      run: |
-        hatch publish
+
+      - name: Checkout code
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Tag Info
+        id: tag_info
+        run: |
+          export IMAGE_TAG="${GITHUB_REF#refs/*/}"
+          export IMAGE_TAG=${IMAGE_TAG//[^[:alnum:].-]/-}
+          echo ::set-output name=IMAGE_TAG::${IMAGE_TAG}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Public ECR
+        uses: docker/login-action@v3
+        with:
+          registry: public.ecr.aws
+          username: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+        env:
+          AWS_REGION: us-east-1
+
+      - name: Build, tag, and push image to Amazon ECR
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: public.ecr.aws/unocha/hdx-scraper-ophi:${{ steps.tag_info.outputs.IMAGE_TAG }}

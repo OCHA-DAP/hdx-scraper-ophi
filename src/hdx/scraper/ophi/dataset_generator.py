@@ -43,11 +43,9 @@ class DatasetGenerator:
         self._global_hxltags = configuration["hxltags"]
         self._country_hxltags = copy(self._global_hxltags)
 
-    def load_showcase_links(self, retriever: Retrieve) -> Dict:
+    def load_showcase_links(self, retriever: Retrieve) -> None:
         url = self._configuration["showcaseinfo"]["urls"]
-        _, iterator = retriever.get_tabular_rows(
-            url, dict_form=True, format="csv"
-        )
+        _, iterator = retriever.get_tabular_rows(url, dict_form=True, format="csv")
         for row in iterator:
             self._showcase_links[row["Country code"]] = row["URL"]
 
@@ -97,14 +95,13 @@ class DatasetGenerator:
         )
         dataset.set_maintainer("196196be-6037-4488-8b71-d786adf4c081")
         dataset.set_organization("00547685-9ded-4d69-9ca5-47d5278ead7c")
-        dataset.set_expected_update_frequency("Every year")
         dataset.add_tags(self.tags)
         dataset.set_subnational(True)
         return dataset
 
     @staticmethod
     def get_title(countryname: str) -> str:
-        return f"{countryname} Multi Dimensional Poverty Index"
+        return f"{countryname} Multidimensional Poverty Index"
 
     @staticmethod
     def get_name(countryname: str) -> str:
@@ -147,7 +144,6 @@ class DatasetGenerator:
         name = self.get_name(countryname)
         dataset = self.generate_dataset_metadata(title, name)
         dataset.set_time_period(date_range["start"], date_range["end"])
-        methodology_info = self._configuration["methodology"]
         resource_descriptions = self._configuration["resource_descriptions"]
 
         resource_name = f"{countryname} MPI and Partial Indices"
@@ -166,15 +162,6 @@ class DatasetGenerator:
             logger.warning(f"{name} has no data!")
             return None
 
-        methodology_text = methodology_info["text"]
-        mpi_and_partial_indices_methodology = methodology_info[
-            "mpi_and_partial_indices"
-        ]
-        dataset["methodology_other"] = (
-            f"{methodology_text} {mpi_and_partial_indices_methodology}"
-        )
-        if not standardised_trend_rows:
-            return dataset
         resource_name = f"{countryname} MPI Trends Over Time"
         filename = f"{countryiso3}_mpi_trends.csv"
         success = self.generate_resource(
@@ -182,16 +169,11 @@ class DatasetGenerator:
             resource_name,
             resource_descriptions["standardised_trends"],
             self._country_hxltags,
-            (
-                standardised_trend_rows[key]
-                for key in sorted(standardised_trend_rows)
-            ),
+            (standardised_trend_rows[key] for key in sorted(standardised_trend_rows)),
             folder,
             filename,
             p_coded=True,
         )
-        trend_over_time_methodology = methodology_info["trend_over_time"]
-        dataset["methodology_other"] += f", {trend_over_time_methodology}"
         return dataset
 
     def generate_global_dataset(
@@ -211,6 +193,7 @@ class DatasetGenerator:
             "Global",
             date_range,
         )
+        dataset.set_expected_update_frequency("As needed")
 
         resource_descriptions = self._configuration["resource_descriptions"]
         resourcedata = {
