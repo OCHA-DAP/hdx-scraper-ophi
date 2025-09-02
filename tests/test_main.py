@@ -291,6 +291,7 @@ class TestOPHI:
                         "one unit.",
                         "format": "csv",
                         "name": "Global MPI and Partial Indices",
+                        "p_coded": True,
                     },
                     {
                         "description": "This resource contains standardised MPI estimates and their "
@@ -300,6 +301,7 @@ class TestOPHI:
                         "indicators by admin one unit.",
                         "format": "csv",
                         "name": "Global MPI Trends Over Time",
+                        "p_coded": True,
                     },
                     {
                         "description": "This table shows the MPI and its partial indices",
@@ -369,6 +371,7 @@ class TestOPHI:
                 assert dataset.get_resources()[0] == {
                     "name": "Global Food Security, Nutrition & Poverty: Poverty Rate",
                     "description": "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/food_security_nutrition_and_poverty/#poverty-rate) for more information",
+                    "p_coded": True,
                     "format": "csv",
                     "dataset_preview_enabled": "False",
                 }
@@ -455,6 +458,7 @@ class TestOPHI:
                         "one unit.",
                         "format": "csv",
                         "name": "Afghanistan MPI and Partial Indices",
+                        "p_coded": True,
                     },
                     {
                         "description": "This resource contains standardised MPI estimates and their "
@@ -464,6 +468,7 @@ class TestOPHI:
                         "indicators by admin one unit.",
                         "format": "csv",
                         "name": "Afghanistan MPI Trends Over Time",
+                        "p_coded": True,
                     },
                 ]
                 for filename in ("AFG_mpi.csv", "AFG_mpi_trends.csv"):
