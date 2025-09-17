@@ -30,7 +30,7 @@ To install and run, execute:
 
 ```shell
     pip install .
-    python -m hdx.scraper.{{cookiecutter.scraper_name}}
+    python -m hdx.scraper.ophi
 ```
 
 ### Pre-commit
