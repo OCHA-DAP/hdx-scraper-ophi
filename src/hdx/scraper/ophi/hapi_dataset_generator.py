@@ -49,20 +49,19 @@ class HAPIDatasetGenerator:
             "description": resource_config["description"],
             "p_coded": True,
         }
-        hxltags = resource_config["hxltags"]
+        headers = resource_config["headers"]
         filename = resource_config["filename"]
 
         if len(self._rows) == 0:
             logger.warning("Poverty rate has no data!")
             return None
 
-        success, _ = dataset.generate_resource_from_iterable(
-            list(hxltags.keys()),
-            (self._rows[key] for key in sorted(self._rows)),
-            hxltags,
+        success, _ = dataset.generate_resource(
             folder,
             f"{filename}.csv",
+            (self._rows[key] for key in sorted(self._rows)),
             resourcedata,
+            headers,
         )
         if success is False:
             logger.warning(f"{resource_name} has no data!")
