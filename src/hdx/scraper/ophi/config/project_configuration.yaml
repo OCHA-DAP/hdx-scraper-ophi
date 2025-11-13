@@ -1,13 +1,13 @@
 datasetinfo:
   mpi_and_partial_indices:
     national:
-      url: "https://ophi.org.uk/sites/default/files/2024-10/Table%201%20National%20Results%20MPI%202024.xlsx"
+      url: "https://ophi.org.uk/sites/default/files/2025-10/Table%201%20National%20Results%20MPI%202025.xlsx"
       sheet: "1.1 National MPI Results"
     subnational:
-      url: "https://ophi.org.uk/sites/default/files/2024-10/Table%205%20Subnational%20Results%20MPI%202024.xlsx"
+      url: "https://ophi.org.uk/sites/default/files/2025-10/Table%205%20Subnational%20Results%20MPI%202025.xlsx"
       sheet: "5.1 MPI Region"
   trend_over_time:
-    url: "https://ophi.org.uk/sites/default/files/2024-10/Table%206%20Trends%20Over%20Time%20MPI%202024_3.xlsx"
+    url: "https://ophi.org.uk/sites/default/files/2025-10/Table_6_Trends_Over_Time_MPI_2025_30_Oct.xlsx"
     national_sheet: "6.1 Harmonised MPI"
     subnational_sheet: "6.4 Harmonised MPI Region"
 

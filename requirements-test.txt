@@ -11,7 +11,7 @@ attrs==25.4.0
     #   jsonlines
     #   jsonschema
     #   referencing
-certifi==2025.10.5
+certifi==2025.11.12
     # via
     #   -c requirements.txt
     #   requests
@@ -23,7 +23,7 @@ charset-normalizer==3.4.4
     # via
     #   -c requirements.txt
     #   requests
-ckanapi==4.8
+ckanapi==4.9
     # via
     #   -c requirements.txt
     #   hdx-python-api
@@ -31,7 +31,7 @@ click==8.3.0
     # via
     #   -c requirements.txt
     #   typer
-coverage==7.11.0
+coverage==7.11.3
     # via pytest-cov
 defopt==7.0.0
     # via
@@ -46,7 +46,7 @@ docopt==0.6.2
     #   -c requirements.txt
     #   ckanapi
     #   num2words
-docutils==0.22.2
+docutils==0.22.3
     # via
     #   -c requirements.txt
     #   defopt
@@ -62,7 +62,7 @@ frictionless==5.18.1
     # via
     #   -c requirements.txt
     #   hdx-python-utilities
-hdx-python-api==6.5.2
+hdx-python-api==6.5.3
     # via
     #   -c requirements.txt
     #   hdx-scraper-ophi (pyproject.toml)
@@ -94,7 +94,7 @@ inflect==7.5.0
     # via
     #   -c requirements.txt
     #   quantulum3
-iniconfig==2.1.0
+iniconfig==2.3.0
     # via pytest
 isodate==0.7.2
     # via
@@ -181,11 +181,11 @@ pockets==0.9.1
     # via
     #   -c requirements.txt
     #   sphinxcontrib-napoleon
-pydantic==2.12.2
+pydantic==2.12.4
     # via
     #   -c requirements.txt
     #   frictionless
-pydantic-core==2.41.4
+pydantic-core==2.41.5
     # via
     #   -c requirements.txt
     #   pydantic
@@ -198,7 +198,7 @@ pyphonetics==0.5.3
     # via
     #   -c requirements.txt
     #   hdx-python-utilities
-pytest==8.4.2
+pytest==9.0.1
     # via
     #   hdx-scraper-ophi (pyproject.toml)
     #   pytest-check
@@ -248,7 +248,7 @@ requests==2.32.5
     #   hdx-python-api
     #   libhxl
     #   requests-file
-requests-file==2.1.0
+requests-file==3.0.1
     # via
     #   -c requirements.txt
     #   hdx-python-utilities
@@ -260,12 +260,12 @@ rich==14.2.0
     # via
     #   -c requirements.txt
     #   typer
-rpds-py==0.27.1
+rpds-py==0.28.0
     # via
     #   -c requirements.txt
     #   jsonschema
     #   referencing
-ruamel-yaml==0.18.15
+ruamel-yaml==0.18.16
     # via
     #   -c requirements.txt
     #   hdx-python-utilities
@@ -300,7 +300,7 @@ sphinxcontrib-napoleon==0.7
     # via
     #   -c requirements.txt
     #   defopt
-structlog==25.4.0
+structlog==25.5.0
     # via
     #   -c requirements.txt
     #   libhxl
@@ -324,7 +324,7 @@ typeguard==4.4.4
     # via
     #   -c requirements.txt
     #   inflect
-typer==0.19.2
+typer==0.20.0
     # via
     #   -c requirements.txt
     #   frictionless
