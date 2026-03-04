@@ -41,7 +41,6 @@ class TestOPHI:
             "tags": [
                 {"name": tag}
                 for tag in (
-                    "hxl",
                     "development",
                     "education",
                     "health",
@@ -236,10 +235,6 @@ class TestOPHI:
                     "subnational": "1",
                     "tags": [
                         {
-                            "name": "hxl",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
                             "name": "development",
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
@@ -354,10 +349,6 @@ class TestOPHI:
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
                         {
-                            "name": "hxl",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
                             "name": "indicators",
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
@@ -402,10 +393,6 @@ class TestOPHI:
                     "owner_org": "00547685-9ded-4d69-9ca5-47d5278ead7c",
                     "subnational": "1",
                     "tags": [
-                        {
-                            "name": "hxl",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
                         {
                             "name": "development",
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
@@ -484,10 +471,6 @@ class TestOPHI:
                     "the country briefs published by the Oxford Poverty and Human "
                     "Development Initiative (OPHI), University of Oxford.",
                     "tags": [
-                        {
-                            "name": "hxl",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
                         {
                             "name": "development",
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",

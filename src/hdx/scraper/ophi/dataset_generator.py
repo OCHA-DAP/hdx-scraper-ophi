@@ -1,5 +1,4 @@
 import logging
-from copy import copy
 from typing import Dict, Iterable, Optional
 
 from slugify import slugify
@@ -15,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 class DatasetGenerator:
     tags = [
-        "hxl",
         "development",
         "education",
         "health",
@@ -40,8 +38,7 @@ class DatasetGenerator:
         self._mpi_national_path = mpi_national_path
         self._mpi_subnational_path = mpi_subnational_path
         self._trend_path = trend_path
-        self._global_hxltags = configuration["hxltags"]
-        self._country_hxltags = copy(self._global_hxltags)
+        self._headers = configuration["headers"]
 
     def load_showcase_links(self, retriever: Retrieve) -> None:
         url = self._configuration["showcaseinfo"]["urls"]
@@ -54,7 +51,6 @@ class DatasetGenerator:
         dataset: Dataset,
         resource_name: str,
         resource_description: str,
-        hxltags: Dict,
         rows: Iterable,
         folder: str,
         filename: str,
@@ -67,14 +63,12 @@ class DatasetGenerator:
         if p_coded:
             resourcedata["p_coded"] = p_coded
 
-        headers = list(hxltags.keys())
-        success, results = dataset.generate_resource_from_iterable(
-            headers,
-            rows,
-            hxltags,
+        success, results = dataset.generate_resource(
             folder,
             filename,
+            rows,
             resourcedata,
+            self._headers,
         )
         return success
 
@@ -152,7 +146,6 @@ class DatasetGenerator:
             dataset,
             resource_name,
             resource_descriptions["standardised_mpi"],
-            self._country_hxltags,
             (standardised_rows[key] for key in sorted(standardised_rows)),
             folder,
             filename,
@@ -168,7 +161,6 @@ class DatasetGenerator:
             dataset,
             resource_name,
             resource_descriptions["standardised_trends"],
-            self._country_hxltags,
             (standardised_trend_rows[key] for key in sorted(standardised_trend_rows)),
             folder,
             filename,
