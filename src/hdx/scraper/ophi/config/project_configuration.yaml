@@ -24,18 +24,18 @@ showcaseinfo:
   urls: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPXtof5E54tGcQcDOUVwKMV9Kelkt_KqyiYCfGtSUg1B7EoMe7lfoVIHeaL2ij6fyxytplaJQojxyp/pub?gid=0&single=true&output=csv"
   notes: "The visual contains sub-national multidimensional poverty data from the country briefs published by the Oxford Poverty and Human Development Initiative (OPHI), University of Oxford."
 
-hxltags:
-  "Country ISO3": "#country+code"
-  "Admin 1 PCode": "#adm1+code"
-  "Admin 1 Name": "#adm1+name"
-  "MPI": "#indicator+mpi"
-  "Headcount Ratio": "#indicator+headcount_ratio"
-  "Intensity of Deprivation": "#indicator+intensity_of_deprivation"
-  "Vulnerable to Poverty": "#indicator+vulnerable_to_poverty"
-  "In Severe Poverty": "#indicator+in_severe_poverty"
-  "Survey": "#meta+survey"
-  "Start Date": "#date+start"
-  "End Date": "#date+end"
+headers:
+   - "Country ISO3"
+   - "Admin 1 PCode"
+   - "Admin 1 Name"
+   - "MPI"
+   - "Headcount Ratio"
+   - "Intensity of Deprivation"
+   - "Vulnerable to Poverty"
+   - "In Severe Poverty"
+   - "Survey"
+   - "Start Date"
+   - "End Date"
 
 resource_descriptions:
   standardised_mpi: "This resource contains standardised MPI estimates by first-level administrative unit (e.g. state, province) and also shows the proportion of people who are MPI poor and experience deprivations in each of the indicators by admin one unit."
