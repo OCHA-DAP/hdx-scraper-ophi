@@ -1,13 +1,12 @@
 import logging
-from typing import Dict, Iterable, Optional
-
-from slugify import slugify
+from collections.abc import Iterable
 
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
 from hdx.data.showcase import Showcase
 from hdx.utilities.retriever import Retrieve
+from slugify import slugify
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +78,7 @@ class DatasetGenerator:
         self,
         title: str,
         name: str,
-    ) -> Optional[Dataset]:
+    ) -> Dataset | None:
         logger.info(f"Creating dataset: {title}")
         dataset = Dataset(
             {
@@ -105,7 +104,7 @@ class DatasetGenerator:
         self,
         countryiso3: str,
         countryname: str,
-    ) -> Optional[Showcase]:
+    ) -> Showcase | None:
         url = self._showcase_links.get(countryiso3)
         if not url:
             return None
@@ -126,12 +125,12 @@ class DatasetGenerator:
     def generate_dataset(
         self,
         folder: str,
-        standardised_rows: Dict,
-        standardised_trend_rows: Dict,
+        standardised_rows: dict,
+        standardised_trend_rows: dict,
         countryiso3: str,
         countryname: str,
-        date_range: Dict,
-    ) -> Optional[Dataset]:
+        date_range: dict,
+    ) -> Dataset | None:
         if not standardised_rows:
             return None
         title = self.get_title(countryname)
@@ -171,10 +170,10 @@ class DatasetGenerator:
     def generate_global_dataset(
         self,
         folder: str,
-        standardised_rows: Dict,
-        standardised_trend_rows: Dict,
-        date_range: Dict,
-    ) -> Optional[Dataset]:
+        standardised_rows: dict,
+        standardised_trend_rows: dict,
+        date_range: dict,
+    ) -> Dataset | None:
         if not standardised_rows:
             return None
         dataset = self.generate_dataset(

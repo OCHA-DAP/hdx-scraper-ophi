@@ -2,21 +2,21 @@ import logging
 from os.path import join
 
 import pytest
-
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
 from hdx.data.vocabulary import Vocabulary
 from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
-from hdx.scraper.ophi.dataset_generator import DatasetGenerator
-from hdx.scraper.ophi.hapi_dataset_generator import HAPIDatasetGenerator
-from hdx.scraper.ophi.hapi_output import HAPIOutput
-from hdx.scraper.ophi.pipeline import Pipeline
 from hdx.utilities.compare import assert_files_same
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import script_dir_plus_file, temp_dir
 from hdx.utilities.retriever import Retrieve
 from hdx.utilities.useragent import UserAgent
+
+from hdx.scraper.ophi.dataset_generator import DatasetGenerator
+from hdx.scraper.ophi.hapi_dataset_generator import HAPIDatasetGenerator
+from hdx.scraper.ophi.hapi_output import HAPIOutput
+from hdx.scraper.ophi.pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
 

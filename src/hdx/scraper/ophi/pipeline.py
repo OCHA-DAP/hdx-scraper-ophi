@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-from typing import Dict, List, Tuple
 
 from hdx.api.configuration import Configuration
 from hdx.location.adminlevel import AdminLevel
@@ -38,8 +37,8 @@ class Pipeline:
         self._date_ranges = {}
 
     def process_date(
-        self, countryiso3: str, date_range: str, row: Dict
-    ) -> Tuple[datetime, datetime]:
+        self, countryiso3: str, date_range: str, row: dict
+    ) -> tuple[datetime, datetime]:
         date_range = date_range.split("-")
         if len(date_range) == 2:
             start_date, _ = parse_date_range(date_range[0])
@@ -72,9 +71,9 @@ class Pipeline:
         admin1_code: str,
         admin1_name: str,
         date_range: str,
-        row: Dict,
-        global_dict: Dict,
-        country_dict: Dict,
+        row: dict,
+        global_dict: dict,
+        country_dict: dict,
         msg: str,
     ) -> None:
         start_date, end_date = self.process_date(countryiso3, date_range, row)
@@ -92,13 +91,13 @@ class Pipeline:
         dict_of_dicts_add(country_dict, countryiso3, key, row)
 
     @classmethod
-    def set_mpi(cls, inheaders: Tuple[str], inrow: Dict, row: Dict) -> None:
+    def set_mpi(cls, inheaders: tuple[str], inrow: dict, row: dict) -> None:
         for i, inheader in enumerate(inheaders):
             header = cls.headers[i]
             row[header] = number_format(inrow[inheader], format="%.4f")
 
     def read_mpi_national_data(
-        self, path: str, format: str, sheet: str, headers: List[str]
+        self, path: str, format: str, sheet: str, headers: list[str]
     ) -> None:
         inheaders = (
             "Multidimensional poverty Multidimensional Poverty Index (MPI = H*A) Range 0 to 1",
@@ -138,7 +137,7 @@ class Pipeline:
             )
 
     def read_mpi_subnational_data(
-        self, path: str, format: str, sheet: str, headers: List[str]
+        self, path: str, format: str, sheet: str, headers: list[str]
     ) -> None:
         inheaders = (
             "Multidimensional poverty by region Multidimensional Poverty Index (MPI = H*A) Range 0 to 1",
@@ -180,7 +179,7 @@ class Pipeline:
             )
 
     def read_trends_national_data(
-        self, path: str, format: str, sheet: str, headers: List[str]
+        self, path: str, format: str, sheet: str, headers: list[str]
     ) -> None:
         inheaders_tn = []
         for timepoint in self.timepoints:
@@ -225,7 +224,7 @@ class Pipeline:
                 )
 
     def read_trends_subnational_data(
-        self, path: str, format: str, sheet: str, headers: List[str]
+        self, path: str, format: str, sheet: str, headers: list[str]
     ) -> None:
         inheaders_tn = []
         for timepoint in self.timepoints:
@@ -271,7 +270,7 @@ class Pipeline:
                     "trends_subnational",
                 )
 
-    def process(self) -> Tuple[str, str, str]:
+    def process(self) -> tuple[str, str, str]:
         datasetinfo = self._configuration["datasetinfo"]
         format = datasetinfo["format"]
         headers = datasetinfo["headers"]
@@ -303,20 +302,20 @@ class Pipeline:
 
         return mpi_national_path, mpi_subnational_path, trend_path
 
-    def get_standardised_global(self) -> Dict:
+    def get_standardised_global(self) -> dict:
         return self._standardised_global
 
-    def get_standardised_countries(self) -> Dict:
+    def get_standardised_countries(self) -> dict:
         return self._standardised_countries
 
-    def get_standardised_global_trend(self) -> Dict:
+    def get_standardised_global_trend(self) -> dict:
         self._standardised_global_trend[0].update(self._standardised_global_trend[1])
         return self._standardised_global_trend[0]
 
-    def get_standardised_countries_trend(self) -> Dict:
+    def get_standardised_countries_trend(self) -> dict:
         for key, value in self._standardised_countries_trend[0].items():
             value.update(self._standardised_countries_trend[1][key])
         return self._standardised_countries_trend[0]
 
-    def get_date_ranges(self) -> Dict:
+    def get_date_ranges(self) -> dict:
         return self._date_ranges

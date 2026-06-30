@@ -8,11 +8,6 @@ from hdx.data.user import User
 from hdx.facades.infer_arguments import facade
 from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
-from hdx.scraper.ophi._version import __version__
-from hdx.scraper.ophi.dataset_generator import DatasetGenerator
-from hdx.scraper.ophi.hapi_dataset_generator import HAPIDatasetGenerator
-from hdx.scraper.ophi.hapi_output import HAPIOutput
-from hdx.scraper.ophi.pipeline import Pipeline
 from hdx.utilities.downloader import Download
 from hdx.utilities.easy_logging import setup_logging
 from hdx.utilities.path import (
@@ -20,6 +15,12 @@ from hdx.utilities.path import (
     wheretostart_tempdir_batch,
 )
 from hdx.utilities.retriever import Retrieve
+
+from hdx.scraper.ophi._version import __version__
+from hdx.scraper.ophi.dataset_generator import DatasetGenerator
+from hdx.scraper.ophi.hapi_dataset_generator import HAPIDatasetGenerator
+from hdx.scraper.ophi.hapi_output import HAPIOutput
+from hdx.scraper.ophi.pipeline import Pipeline
 
 setup_logging()
 logger = logging.getLogger(__name__)

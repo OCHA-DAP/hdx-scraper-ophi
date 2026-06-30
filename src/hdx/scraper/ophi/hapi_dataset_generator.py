@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import Dict, Optional, Tuple
 
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
@@ -11,13 +10,13 @@ class HAPIDatasetGenerator:
     def __init__(
         self,
         configuration: Configuration,
-        rows: Dict,
+        rows: dict,
     ) -> None:
         self._configuration = configuration["hapi_dataset"]
         self._rows = rows
         self.slugified_name = self._configuration["name"]
 
-    def generate_dataset(self) -> Tuple[Dataset, Dict]:
+    def generate_dataset(self) -> tuple[Dataset, dict]:
         title = self._configuration["title"]
         logger.info(f"Creating dataset: {title}")
         dataset = Dataset(
@@ -40,7 +39,7 @@ class HAPIDatasetGenerator:
     def generate_poverty_rate_dataset(
         self,
         folder: str,
-    ) -> Optional[Dataset]:
+    ) -> Dataset | None:
         dataset, resource_config = self.generate_dataset()
 
         resource_name = resource_config["name"]

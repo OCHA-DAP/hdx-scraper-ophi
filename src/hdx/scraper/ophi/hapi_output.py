@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import Dict, List, Optional
 
 from hdx.api.configuration import Configuration
 from hdx.location.adminlevel import AdminLevel
@@ -13,8 +12,8 @@ class HAPIOutput:
         self,
         configuration: Configuration,
         adminone: AdminLevel,
-        standardised_rows: Dict,
-        standardised_trend_rows: Dict,
+        standardised_rows: dict,
+        standardised_trend_rows: dict,
     ) -> None:
         self._configuration = configuration
         self._adminone = adminone
@@ -22,7 +21,7 @@ class HAPIOutput:
         self._standardised_trend_rows = standardised_trend_rows
         self._rows = {}
 
-    def create_rows(self, rows: Dict, dataset_id: str, resource_id: str) -> None:
+    def create_rows(self, rows: dict, dataset_id: str, resource_id: str) -> None:
         for row in rows.values():
             output_row = {}
             countryiso3 = row["Country ISO3"]
@@ -67,8 +66,8 @@ class HAPIOutput:
     def process(
         self,
         dataset_id: str,
-        resource_ids: List[str],
-    ) -> Optional[Dict]:
+        resource_ids: list[str],
+    ) -> dict | None:
         self.create_rows(self._standardised_rows, dataset_id, resource_ids[0])
         self.create_rows(self._standardised_trend_rows, dataset_id, resource_ids[1])
         return self._rows
