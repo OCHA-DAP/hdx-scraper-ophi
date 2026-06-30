@@ -17,41 +17,92 @@ Vulnerable to Poverty, and In Severe Poverty values; admin-1 region names are
 matched to P-codes using COD admin boundaries; poverty metrics are standardised
 to 4 decimal places; and trend data (two timepoints per country) is joined; these results are written
 to the per-country and global MPI datasets first, and then the HAPI poverty rate
-dataset is generated from the global MPI data. It is run annually on 20 October.
+dataset is generated from the global MPI data. It runs annually in late October
+(between the 20th and 24th, on the nearest weekday) at around 1 PM UTC and takes
+approximately 10 minutes to complete.
+
+## Data Pipeline
+
+### API reads (~3 downloads + small number of HDX reads per run)
+
+- **OPHI Excel downloads** (3 downloads): national results, subnational results,
+  and trends files from the OPHI website, each approximately 1–2 MB.
+- **Google Sheets CSV** (1 download): country showcase links.
+- **HDX admin boundary reads** (small number): admin-1 P-codes fetched from COD
+  admin boundary datasets.
+
+### API writes (~100–110 calls per run)
+
+- **Per-country MPI datasets** (~one write per country): each dataset contains MPI,
+  Headcount Ratio, Intensity of Deprivation, Vulnerable to Poverty, and In Severe
+  Poverty values at national and subnational level.
+- **Global MPI dataset** (1 write): aggregates data across all countries.
+- **HAPI poverty rate dataset** (1 write): derived from the global MPI data.
+
+### Temporary files
+
+- None significant; data is read directly into memory from downloaded files.
+
+### Uploaded files
+
+- Per-country MPI datasets with national and subnational poverty metrics.
+- Global MPI dataset.
+- HAPI poverty rate dataset.
+
+### Transformations
+
+1. **Excel parsing**: national results, subnational results, and trend tables are
+   extracted from the downloaded Excel files.
+2. **P-code matching**: admin-1 region names are matched to P-codes using COD
+   admin boundaries.
+3. **Metric standardisation**: poverty metrics (MPI, Headcount Ratio, Intensity of
+   Deprivation, Vulnerable to Poverty, In Severe Poverty) are standardised to 4
+   decimal places.
+4. **Trend join**: trend data covering two timepoints per country is joined to the
+   national results.
 
 ## Development
 
 ### Environment
 
-Development is currently done using Python 3.13. We recommend using a virtual
-environment such as ``venv``:
+Development is currently done using Python 3.13. The environment can be created with:
 
 ```shell
-    python -m venv venv
-    source venv/bin/activate
+    uv sync
 ```
 
-In your virtual environment, install all packages for development by running:
-
-```shell
-    pip install -r requirements.txt
-```
+This creates a .venv folder with the versions specified in the project's uv.lock file.
 
 ### Installing and running
 
-To install and run, execute:
+For the script to run, you will need to have a file called
+.hdx_configuration.yaml in your home directory containing your HDX key, e.g.:
+
+    hdx_key: "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    hdx_read_only: false
+    hdx_site: prod
+
+ You will also need to supply the universal .useragents.yaml file in your home
+ directory as specified in the parameter *user_agent_config_yaml* passed to
+ facade in run.py. The collector reads the key
+ **hdx-scraper-ophi** as specified in the parameter
+ *user_agent_lookup*.
+
+ Alternatively, you can set up environment variables: `USER_AGENT`, `HDX_KEY`,
+`HDX_SITE`, `EXTRA_PARAMS`, `TEMP_DIR`, and `LOG_FILE_ONLY`.
+
+To run, execute:
 
 ```shell
-    pip install .
-    python -m hdx.scraper.ophi
+    uv run python -m hdx.scraper.ophi
 ```
 
 ### Pre-commit
 
-Be sure to install `pre-commit`, which is run every time you make a git commit:
+pre-commit will be installed when syncing uv. It is run every time you make a git
+commit if you call it like this:
 
 ```shell
-    pip install pre-commit
     pre-commit install
 ```
 
@@ -64,54 +115,41 @@ To check if your changes pass pre-commit without committing, run:
     pre-commit run --all-files
 ```
 
-### Testing
-
-Ensure you have the required packages to run the tests:
-
-```shell
-    pip install -r requirements-test.txt
-```
-
-To run the tests and view coverage, execute:
-
-```shell
-    pytest -c --cov hdx
-```
-
 ## Packages
 
 [uv](https://github.com/astral-sh/uv) is used for package management.  If
-you’ve introduced a new package to the source code (i.e. anywhere in `src/`),
+you've introduced a new package to the source code (i.e. anywhere in `src/`),
 please add it to the `project.dependencies` section of `pyproject.toml` with
 any known version constraints.
 
-To add packages required only for testing, add them to the `test` section under
-`[project.optional-dependencies]`.
+To add packages required only for testing, add them to the
+`[dependency-groups]`.
 
 Any changes to the dependencies will be automatically reflected in
-`requirements.txt` and `requirements-test.txt` with `pre-commit`, but you can
-re-generate the files without committing by executing:
+`uv.lock` with `pre-commit`, but you can re-generate the files without committing by
+executing:
 
 ```shell
-    pre-commit run pip-compile --all-files
+    uv lock --upgrade
 ```
 
 ## Project
 
-[Hatch](https://hatch.pypa.io/) is used for project management. The project can be built using:
+[uv](https://github.com/astral-sh/uv) is used for project management. The project can be
+built using:
 
 ```shell
-    hatch build
+    uv build
 ```
 
 Linting and syntax checking can be run with:
 
 ```shell
-    hatch fmt --check
+    uv run ruff check
 ```
 
-Tests can be executed using:
+To run the tests and view coverage, execute:
 
 ```shell
-    hatch test
+    uv run pytest
 ```
