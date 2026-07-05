@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**hdx-scraper-ophi** retrieves Multidimensional Poverty Index (MPI) data from the [Oxford Poverty and Human Development Initiative (OPHI)](https://ophi.org.uk/) and publishes it to HDX as per-country and global MPI datasets, and as a HAPI poverty rate dataset. It downloads Excel files from OPHI, a CSV from Google Sheets, and makes HDX reads and writes. It is run annually on 20 October.
+**hdx-scraper-ophi** retrieves Multidimensional Poverty Index (MPI) data from the [Oxford Poverty and Human Development Initiative (OPHI)](https://ophi.org.uk/) and publishes it to HDX as per-country and global MPI datasets, and as a HAPI poverty rate dataset. It downloads Excel files from OPHI, a CSV from Google Sheets, and makes HDX reads and writes. It is run annually in late October (between the 20th and 24th, on the nearest weekday).
 
 ## Commands
 

@@ -10,20 +10,18 @@ and publishes it to HDX first as per-country and global MPI datasets, and then
 as a HAPI poverty rate dataset derived from the same data. It downloads 3 Excel files from the OPHI website (national
 results, subnational results, and trends, each approximately 1–2 MB), 1 CSV from
 Google Sheets (country showcase links), and makes a small number of HDX reads to
-fetch admin-1 boundary P-codes. It makes approximately 100–110 HDX writes
-(one per country dataset plus a global dataset and a HAPI dataset). The Excel
+fetch admin-1 boundary P-codes. It makes
+HDX writes (one per country dataset plus a global dataset and a HAPI dataset). The Excel
 tables are parsed to extract MPI, Headcount Ratio, Intensity of Deprivation,
 Vulnerable to Poverty, and In Severe Poverty values; admin-1 region names are
 matched to P-codes using COD admin boundaries; poverty metrics are standardised
 to 4 decimal places; and trend data (two timepoints per country) is joined; these results are written
 to the per-country and global MPI datasets first, and then the HAPI poverty rate
-dataset is generated from the global MPI data. It runs annually in late October
-(between the 20th and 24th, on the nearest weekday) at around 1 PM UTC and takes
-approximately 10 minutes to complete.
+dataset is generated from the global MPI data.
 
 ## Data Pipeline
 
-### API reads (~3 downloads + small number of HDX reads per run)
+### API reads (3 downloads + small number of HDX reads per run)
 
 - **OPHI Excel downloads** (3 downloads): national results, subnational results,
   and trends files from the OPHI website, each approximately 1–2 MB.
@@ -31,7 +29,7 @@ approximately 10 minutes to complete.
 - **HDX admin boundary reads** (small number): admin-1 P-codes fetched from COD
   admin boundary datasets.
 
-### API writes (~100–110 calls per run)
+### API writes
 
 - **Per-country MPI datasets** (~one write per country): each dataset contains MPI,
   Headcount Ratio, Intensity of Deprivation, Vulnerable to Poverty, and In Severe
