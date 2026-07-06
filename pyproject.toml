@@ -15,13 +15,12 @@ dependencies = [
   "hdx-python-country>=4.1.1",
   "hdx-python-utilities>=4.0.8",
 ]
-
-[project.readme]
-file = "README.md"
-content-type = "text/markdown"
+readme = "README.md"
 
 [project.urls]
 Homepage = "https://github.com/OCHA-DAP/hdx-scraper-ophi"
+Repository = "https://github.com/OCHA-DAP/hdx-scraper-ophi"
+Issues = "https://github.com/OCHA-DAP/hdx-scraper-ophi/issues"
 
 [dependency-groups]
 dev = [
@@ -29,7 +28,7 @@ dev = [
   "pytest-check",
   "pytest-cov",
   "pre-commit",
-  "ruff==0.12.0",
+  "ruff==0.14.14",
 ]
 
 [project.scripts]
