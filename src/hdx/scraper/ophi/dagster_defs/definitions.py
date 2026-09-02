@@ -33,7 +33,10 @@ defs = Definitions(
     schedules=[ophi_annual_schedule],
     sensors=[ophi_country_fanout_sensor],
     resources={
-        "hdx_config": HDXConfigResource(),
+        # hdx_site is explicit here rather than left to fall back to whatever
+        # ~/.hdx_configuration.yaml says on whichever machine runs this - this is a
+        # comparison/testing deployment and must not silently resolve to prod.
+        "hdx_config": HDXConfigResource(hdx_site="stage"),
         "retriever_resource": retriever_resource,
         "adminone_resource": AdminOneResource(retriever_resource=retriever_resource),
     },
