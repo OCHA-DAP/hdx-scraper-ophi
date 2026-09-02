@@ -21,6 +21,7 @@ from dagster import (
     ScheduleEvaluationContext,
     SkipReason,
     define_asset_job,
+    in_process_executor,
     run_status_sensor,
     schedule,
 )
@@ -30,6 +31,14 @@ from hdx.scraper.ophi.dagster_defs.assets import country_mpi_dataset, country_pa
 core_job = define_asset_job(
     "ophi_core_job",
     selection=AssetSelection.all() - AssetSelection.assets(country_mpi_dataset),
+    # RetrieverResource is one shared instance for the whole run holding one scratch
+    # folder/batch id (see its docstring) - under the default multiprocess executor,
+    # each asset gets its own subprocess and its own resource instance, so e.g. one
+    # asset's teardown can delete the shared folder out from under another asset still
+    # writing to it. in_process_executor keeps every asset in this job on the one
+    # process/resource instance the design assumes, matching how materialize() in
+    # tests/test_dagster_defs.py already runs it.
+    executor_def=in_process_executor,
 )
 country_job = define_asset_job(
     "ophi_country_job",

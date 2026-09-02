@@ -15,6 +15,7 @@ from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import script_dir_plus_file, temp_dir_batch
 from hdx.utilities.retriever import Retrieve
+from hdx.utilities.useragent import UserAgent
 from pydantic import PrivateAttr
 
 from hdx.scraper.ophi.pipeline import Pipeline
@@ -90,6 +91,17 @@ class RetrieverResource(ConfigurableResource):
     _batch: str = PrivateAttr(default=None)
 
     def setup_for_execution(self, context: InitResourceContext) -> None:
+        if not UserAgent.user_agent:
+            # Download() below needs the global user agent set - it can't rely on
+            # HDXConfigResource.setup_for_execution having run first (its Configuration.
+            # create() doesn't set this globally anyway, and some assets, e.g.
+            # admin1_boundaries, don't even depend on hdx_config). hdx.facades.simple.
+            # facade does the equivalent assignment for the same reason. Guarded so it
+            # doesn't clobber a user agent a caller (e.g. a test fixture) already set.
+            UserAgent.set_global(
+                user_agent_config_yaml=join(expanduser("~"), ".useragents.yaml"),
+                user_agent_lookup=lookup,
+            )
         downloader = self._exit_stack.enter_context(Download())
         # HDX requires the batch id to be a valid *v4* UUID (hdx.utilities.uuid.
         # is_valid_uuid checks UUID(batch, version=4) round-trips) - uuid5 doesn't
