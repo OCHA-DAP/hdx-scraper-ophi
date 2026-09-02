@@ -42,7 +42,10 @@ from hdx.scraper.ophi.pipeline import Pipeline
 READ_ONLY = (
     True  # mirrors dagster_defs.definitions' HDXConfigResource(); flip for a real run
 )
-HDX_SITE = None
+# Explicit rather than left to fall back to whatever ~/.hdx_configuration.yaml says on
+# whichever machine runs this - this is a comparison/testing deployment and must not
+# silently resolve to prod.
+HDX_SITE = "stage"
 
 
 def target_run_day(year: int) -> date:
