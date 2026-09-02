@@ -70,7 +70,15 @@ def _maybe_create(dataset: Dataset, batch: str) -> None:
     )
 
 
-def is_target_run_day(logical_date: datetime) -> bool:
+def is_target_run_day(logical_date: datetime | None = None) -> bool:
+    # Airflow only puts "logical_date" in the task context at all when the dag run has
+    # one (scheduled/backfill runs) - for a manual trigger with no date specified the
+    # key is absent entirely, so this needs its own default rather than relying on the
+    # injected value being None. Treat that as an explicit ad hoc run and skip the gate,
+    # the same way a manual Dagster launch bypasses ophi_annual_schedule entirely rather
+    # than going through its SkipReason check.
+    if logical_date is None:
+        return True
     scheduled_date = logical_date.date()
     return scheduled_date == target_run_day(scheduled_date.year)
 

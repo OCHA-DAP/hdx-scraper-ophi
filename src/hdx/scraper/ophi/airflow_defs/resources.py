@@ -24,6 +24,7 @@ from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import script_dir_plus_file, temp_dir_batch
 from hdx.utilities.retriever import Retrieve
+from hdx.utilities.useragent import UserAgent
 
 from hdx.scraper.ophi.pipeline import Pipeline
 
@@ -97,11 +98,32 @@ def retriever_context(
     use_saved: bool = False,
     saved_dir: str = "saved_data",
     batch_seed: str | None = None,
-    delete_scratch_on_success: bool = True,
+    delete_scratch_on_success: bool = False,
 ):
     """Context-manager equivalent of RetrieverResource.setup_for_execution/
     teardown_after_execution - yields a RetrieverHandle exposing .retriever/.folder/
-    .batch, matching the Dagster resource's properties."""
+    .batch, matching the Dagster resource's properties.
+
+    delete_scratch_on_success defaults to False here (unlike RetrieverResource, which
+    defaults to True): the folder is shared by every task in the run (see module
+    docstring), and temp_dir_batch() deletes it outright on a successful exit - since
+    several tasks in this DAG run concurrently against the same folder (e.g. the four
+    downloads, or the country_mpi_dataset fan-out), one task finishing first would
+    delete the folder while another was still reading/writing it. Dagster's equivalent
+    race is avoided by pinning ophi_core_job to in_process_executor instead (see
+    dagster_defs/jobs_schedules.py) - not an option here since every Airflow task is
+    already its own process by design. Cleanup of the run's scratch folder is left as a
+    manual/out-of-scope concern for this local comparison.
+    """
+    if not UserAgent.user_agent:
+        # Same reasoning as dagster_defs' RetrieverResource fix: Download() below needs
+        # the global user agent set, and setup_hdx_configuration()'s Configuration.
+        # create() doesn't set it globally. Guarded so it doesn't clobber a user agent a
+        # caller (e.g. a test fixture) already set.
+        UserAgent.set_global(
+            user_agent_config_yaml=join(expanduser("~"), ".useragents.yaml"),
+            user_agent_lookup=lookup,
+        )
     folder_name = run_scratch_folder(run_id)
     batch = batch_for_seed(batch_seed)
     with (

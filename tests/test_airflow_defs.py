@@ -151,6 +151,14 @@ class TestOPHIAirflowDefs:
         # 22 Oct 2026 is a Thursday -> observed on the day itself.
         assert dag.target_run_day(2026) == date(2026, 10, 22)
 
+    def test_is_target_run_day(self):
+        from datetime import UTC, datetime
+
+        # A manual trigger with no logical_date always runs.
+        assert dag.is_target_run_day(None) is True
+        assert dag.is_target_run_day(datetime(2026, 10, 22, tzinfo=UTC)) is True
+        assert dag.is_target_run_day(datetime(2026, 10, 23, tzinfo=UTC)) is False
+
     def test_dag_structure(self):
         assert dag.dag_object.dag_id == "ophi_pipeline"
         mapped_task = dag.dag_object.get_task("country_mpi_dataset")
