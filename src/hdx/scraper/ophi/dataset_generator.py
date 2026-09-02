@@ -31,9 +31,10 @@ class DatasetGenerator:
         mpi_national_path: str,
         mpi_subnational_path: str,
         trend_path: str,
+        showcase_links: dict | None = None,
     ) -> None:
         self._configuration = configuration
-        self._showcase_links = {}
+        self._showcase_links = showcase_links or {}
         self._mpi_national_path = mpi_national_path
         self._mpi_subnational_path = mpi_subnational_path
         self._trend_path = trend_path
@@ -44,6 +45,9 @@ class DatasetGenerator:
         _, iterator = retriever.get_tabular_rows(url, dict_form=True, format="csv")
         for row in iterator:
             self._showcase_links[row["Country code"]] = row["URL"]
+
+    def get_showcase_links(self) -> dict:
+        return self._showcase_links
 
     def generate_resource(
         self,

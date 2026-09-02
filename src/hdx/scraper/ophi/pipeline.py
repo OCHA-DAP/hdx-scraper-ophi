@@ -270,36 +270,59 @@ class Pipeline:
                     "trends_subnational",
                 )
 
-    def process(self) -> tuple[str, str, str]:
+    def download_mpi_national(self) -> str:
+        mpi_national = self._configuration["datasetinfo"]["mpi_and_partial_indices"][
+            "national"
+        ]
+        return self._retriever.download_file(
+            mpi_national["url"], "national-results-mpi.xlsx"
+        )
+
+    def download_mpi_subnational(self) -> str:
+        mpi_subnational = self._configuration["datasetinfo"]["mpi_and_partial_indices"][
+            "subnational"
+        ]
+        return self._retriever.download_file(
+            mpi_subnational["url"], "subnational-results-mpi.xlsx"
+        )
+
+    def download_trends(self) -> str:
+        trend_over_time = self._configuration["datasetinfo"]["trend_over_time"]
+        return self._retriever.download_file(
+            trend_over_time["url"], "trends-over-time-mpi.xlsx"
+        )
+
+    def parse(
+        self, mpi_national_path: str, mpi_subnational_path: str, trend_path: str
+    ) -> None:
         datasetinfo = self._configuration["datasetinfo"]
         format = datasetinfo["format"]
         headers = datasetinfo["headers"]
 
         mpi_and_partial_indices = datasetinfo["mpi_and_partial_indices"]
         mpi_national = mpi_and_partial_indices["national"]
-        url = mpi_national["url"]
-        mpi_national_path = self._retriever.download_file(
-            url, "national-results-mpi.xlsx"
+        self.read_mpi_national_data(
+            mpi_national_path, format, mpi_national["sheet"], headers
         )
-        sheet = mpi_national["sheet"]
-        self.read_mpi_national_data(mpi_national_path, format, sheet, headers)
 
         mpi_subnational = mpi_and_partial_indices["subnational"]
-        url = mpi_subnational["url"]
-        mpi_subnational_path = self._retriever.download_file(
-            url, "subnational-results-mpi.xlsx"
+        self.read_mpi_subnational_data(
+            mpi_subnational_path, format, mpi_subnational["sheet"], headers
         )
-        sheet = mpi_subnational["sheet"]
-        self.read_mpi_subnational_data(mpi_subnational_path, format, sheet, headers)
 
         trend_over_time = datasetinfo["trend_over_time"]
-        url = trend_over_time["url"]
-        trend_path = self._retriever.download_file(url, "trends-over-time-mpi.xlsx")
-        sheet = trend_over_time["national_sheet"]
-        self.read_trends_national_data(trend_path, format, sheet, headers)
-        sheet = trend_over_time["subnational_sheet"]
-        self.read_trends_subnational_data(trend_path, format, sheet, headers)
+        self.read_trends_national_data(
+            trend_path, format, trend_over_time["national_sheet"], headers
+        )
+        self.read_trends_subnational_data(
+            trend_path, format, trend_over_time["subnational_sheet"], headers
+        )
 
+    def process(self) -> tuple[str, str, str]:
+        mpi_national_path = self.download_mpi_national()
+        mpi_subnational_path = self.download_mpi_subnational()
+        trend_path = self.download_trends()
+        self.parse(mpi_national_path, mpi_subnational_path, trend_path)
         return mpi_national_path, mpi_subnational_path, trend_path
 
     def get_standardised_global(self) -> dict:

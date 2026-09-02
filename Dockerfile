@@ -32,8 +32,25 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # 6. Delete the raw source tree to prevent shadowing the installed package
 RUN rm -rf src/ .git/ tests/
 
-# --- Stage 2: Final Runtime ---
-FROM public.ecr.aws/unocha/python:3.13-stable
+# --- Stage 2: Dagster gRPC code location ---
+# Built and pushed separately with `docker build --target dagster-grpc` - not the
+# default target, so the plain `docker build .` used by publish.yaml is unaffected.
+# Runs as its own code location against the shared dagster-azure webserver/daemon
+# deployment (see dagster-azure/AZURE_SETUP_PLAN.md).
+FROM public.ecr.aws/unocha/python:3.13-stable AS dagster-grpc
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /srv
+COPY --from=builder /srv /srv
+ENV PATH="/srv/.venv/bin:${PATH}"
+
+EXPOSE 4000
+CMD ["dagster", "api", "grpc", "-m", "hdx.scraper.ophi.dagster_defs.definitions", "-a", "defs", "-h", "0.0.0.0", "-p", "4000"]
+
+# --- Stage 3: Final Runtime (default target) ---
+FROM public.ecr.aws/unocha/python:3.13-stable AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
