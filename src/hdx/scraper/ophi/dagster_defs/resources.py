@@ -139,7 +139,18 @@ class RetrieverResource(ConfigurableResource):
         )
 
     def teardown_after_execution(self, context: InitResourceContext) -> None:
-        self._exit_stack.close()
+        try:
+            self._exit_stack.close()
+        except FileNotFoundError:
+            # This resource is wired both as its own top-level resource and nested
+            # inside AdminOneResource - Dagster's pythonic-resource resolution runs a
+            # separate setup/teardown lifecycle for each reference rather than treating
+            # them as the same instance (see ConfigurableResource.
+            # _resolve_and_update_nested_resources), so two independent instances end up
+            # managing the same on-disk scratch folder. Whichever teardown runs first
+            # deletes it; harmless, since by teardown time every asset has already
+            # materialized successfully - just swallow the second one's cleanup error.
+            pass
 
     @property
     def retriever(self) -> Retrieve:
