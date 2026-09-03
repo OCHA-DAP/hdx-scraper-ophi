@@ -20,6 +20,7 @@ the run shares (see resources.py).
 """
 
 from datetime import date, datetime, timedelta
+from logging import getLogger
 from os.path import join
 
 from airflow.sdk import DAG, dag, task
@@ -45,6 +46,8 @@ from hdx.scraper.ophi.pipeline import Pipeline
 # (download URLs, "Creating dataset: ...", read-only status, etc.) has no configured
 # handler and is silently dropped rather than showing up in each task's log.
 setup_logging()
+
+logger = getLogger(__name__)
 
 READ_ONLY = (
     True  # mirrors dagster_defs.definitions' HDXConfigResource(); flip for a real run
@@ -72,6 +75,7 @@ def _config_path(filename: str) -> str:
 
 def _maybe_create(dataset: Dataset, batch: str) -> None:
     if READ_ONLY:
+        logger.info(f"read_only=True: not writing dataset '{dataset['name']}' to HDX.")
         return
     dataset.create_in_hdx(
         remove_additional_resources=True,
