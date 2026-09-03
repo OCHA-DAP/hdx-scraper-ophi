@@ -323,12 +323,15 @@ def country_mpi_dataset(
 def _render_task_log(log_file: Any) -> str:
     """Reformat an Airflow 3 JSON-lines task log file into conventional plain-text
     lines for inlining into another task's log - dropping the per-line context keys
-    that are redundant once you already know which task/run this is (logger, ti_id,
-    try_number, map_index, dag_id, task_id, run_id, filename, lineno), and rendering a
-    "Task failed with exception" record's error_detail as a short exception chain
-    (exc_type: exc_value per exception) instead of the full frame-by-frame traceback for
-    every exception in the chain, which otherwise makes each failure a huge wall of
-    JSON that buries the actual error under stack-frame noise.
+    that are redundant once you already know which task/run this is (timestamp, logger,
+    ti_id, try_number, map_index, dag_id, task_id, run_id, filename, lineno - the
+    original per-line timestamp is dropped too, since Airflow's own JSON wrapper already
+    timestamps the line this ends up inlined into, and showing both looked like a
+    duplicate), and rendering a "Task failed with exception" record's error_detail as a
+    short exception chain (exc_type: exc_value per exception) instead of the full
+    frame-by-frame traceback for every exception in the chain, which otherwise makes
+    each failure a huge wall of JSON that buries the actual error under stack-frame
+    noise.
     """
     import json
 
@@ -342,13 +345,11 @@ def _render_task_log(log_file: Any) -> str:
         except json.JSONDecodeError:
             lines.append(raw_line)
             continue
-        timestamp = record.get("timestamp", "")[:19].replace("T", " ")
         level = record.get("level", "info").upper()
-        lines.append(f"{timestamp} {level:<8} {record.get('event', '')}")
+        lines.append(f"{level:<8} {record.get('event', '')}")
         for exc in record.get("error_detail") or []:
             lines.append(
-                f"{timestamp} {level:<8}   "
-                f"{exc.get('exc_type', '?')}: {exc.get('exc_value', '')}"
+                f"{level:<8}   {exc.get('exc_type', '?')}: {exc.get('exc_value', '')}"
             )
     return "\n".join(lines)
 
