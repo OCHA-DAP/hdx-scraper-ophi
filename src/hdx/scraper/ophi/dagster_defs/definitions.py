@@ -11,6 +11,7 @@ Local ad hoc materialization:
 """
 
 from dagster import Definitions, load_assets_from_modules
+from hdx.utilities.easy_logging import setup_logging
 
 from hdx.scraper.ophi.dagster_defs import assets
 from hdx.scraper.ophi.dagster_defs.jobs_schedules import (
@@ -24,6 +25,12 @@ from hdx.scraper.ophi.dagster_defs.resources import (
     HDXConfigResource,
     RetrieverResource,
 )
+
+# hdx.scraper.ophi.__main__ calls this at import time; dagster_defs never imports
+# __main__, so without this call every hdx-python-api/hdx-python-utilities log message
+# (download URLs, "Creating dataset: ...", read-only status, etc.) has no configured
+# handler and is silently dropped rather than showing up in the run's stdout/stderr.
+setup_logging()
 
 retriever_resource = RetrieverResource(save=False, use_saved=False)
 
