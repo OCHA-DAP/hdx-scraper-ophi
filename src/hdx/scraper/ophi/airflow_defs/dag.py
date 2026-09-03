@@ -26,6 +26,7 @@ from airflow.sdk import DAG, dag, task
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.location.country import Country
+from hdx.utilities.easy_logging import setup_logging
 from hdx.utilities.path import script_dir_plus_file
 
 from hdx.scraper.ophi.airflow_defs.resources import (
@@ -38,6 +39,12 @@ from hdx.scraper.ophi.dataset_generator import DatasetGenerator
 from hdx.scraper.ophi.hapi_dataset_generator import HAPIDatasetGenerator
 from hdx.scraper.ophi.hapi_output import HAPIOutput
 from hdx.scraper.ophi.pipeline import Pipeline
+
+# hdx.scraper.ophi.__main__ calls this at import time; this module never imports
+# __main__, so without this call every hdx-python-api/hdx-python-utilities log message
+# (download URLs, "Creating dataset: ...", read-only status, etc.) has no configured
+# handler and is silently dropped rather than showing up in each task's log.
+setup_logging()
 
 READ_ONLY = (
     True  # mirrors dagster_defs.definitions' HDXConfigResource(); flip for a real run
