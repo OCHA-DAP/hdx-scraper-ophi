@@ -22,6 +22,7 @@ the run shares (see resources.py).
 from datetime import date, datetime, timedelta
 from logging import getLogger
 from os.path import join
+from typing import Any
 
 from airflow.sdk import DAG, dag, task
 from hdx.api.configuration import Configuration
@@ -84,16 +85,17 @@ def _maybe_create(dataset: Dataset, batch: str) -> None:
     )
 
 
-def is_target_run_day(logical_date: datetime | None = None) -> bool:
-    # Airflow only puts "logical_date" in the task context at all when the dag run has
-    # one (scheduled/backfill runs) - for a manual trigger with no date specified the
-    # key is absent entirely, so this needs its own default rather than relying on the
-    # injected value being None. Treat that as an explicit ad hoc run and skip the gate,
-    # the same way a manual Dagster launch bypasses ophi_annual_schedule entirely rather
-    # than going through its SkipReason check.
-    if logical_date is None:
+def is_target_run_day(dag_run: Any) -> bool:
+    # Only a genuine scheduled tick is subject to the day gate - any other trigger kind
+    # (manual, backfill, API) always runs, the same way a manual Dagster launch bypasses
+    # ophi_annual_schedule's SkipReason check entirely rather than going through it.
+    # dag_run.run_type, not logical_date, is what actually distinguishes these: a bare
+    # CLI `airflow dags trigger` leaves logical_date=None, but Airflow's web UI trigger
+    # stamps a real logical_date (now) on an equally-manual run, so checking for None
+    # would incorrectly subject a UI-triggered run to the day check.
+    if dag_run.run_type != "scheduled":
         return True
-    scheduled_date = logical_date.date()
+    scheduled_date = dag_run.logical_date.date()
     return scheduled_date == target_run_day(scheduled_date.year)
 
 

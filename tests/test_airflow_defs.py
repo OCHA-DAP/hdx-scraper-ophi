@@ -153,11 +153,34 @@ class TestOPHIAirflowDefs:
 
     def test_is_target_run_day(self):
         from datetime import UTC, datetime
+        from types import SimpleNamespace
 
-        # A manual trigger with no logical_date always runs.
-        assert dag.is_target_run_day(None) is True
-        assert dag.is_target_run_day(datetime(2026, 10, 22, tzinfo=UTC)) is True
-        assert dag.is_target_run_day(datetime(2026, 10, 23, tzinfo=UTC)) is False
+        def fake_dag_run(run_type: str, logical_date: datetime | None = None):
+            return SimpleNamespace(run_type=run_type, logical_date=logical_date)
+
+        # Any non-"scheduled" trigger always runs, regardless of logical_date - this
+        # covers both a bare CLI trigger (logical_date=None) and a UI trigger (which
+        # stamps a real logical_date on an equally-manual run).
+        assert dag.is_target_run_day(fake_dag_run("manual")) is True
+        assert (
+            dag.is_target_run_day(
+                fake_dag_run("manual", datetime(2026, 9, 3, tzinfo=UTC))
+            )
+            is True
+        )
+        # A genuine scheduled tick is subject to the day gate.
+        assert (
+            dag.is_target_run_day(
+                fake_dag_run("scheduled", datetime(2026, 10, 22, tzinfo=UTC))
+            )
+            is True
+        )
+        assert (
+            dag.is_target_run_day(
+                fake_dag_run("scheduled", datetime(2026, 10, 23, tzinfo=UTC))
+            )
+            is False
+        )
 
     def test_dag_structure(self):
         assert dag.dag_object.dag_id == "ophi_pipeline"
