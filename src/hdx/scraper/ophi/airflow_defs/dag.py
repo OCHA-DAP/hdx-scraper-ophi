@@ -19,6 +19,7 @@ build_admin1_boundaries() - cheap, since it reads from the scratch folder every 
 the run shares (see resources.py).
 """
 
+import sys
 from datetime import date, datetime, timedelta
 from logging import getLogger
 from os.path import join
@@ -30,6 +31,7 @@ from hdx.data.dataset import Dataset
 from hdx.location.country import Country
 from hdx.utilities.easy_logging import setup_logging
 from hdx.utilities.path import script_dir_plus_file
+from loguru import logger as loguru_logger
 
 from hdx.scraper.ophi.airflow_defs.resources import (
     build_admin1_boundaries,
@@ -47,6 +49,20 @@ from hdx.scraper.ophi.pipeline import Pipeline
 # (download URLs, "Creating dataset: ...", read-only status, etc.) has no configured
 # handler and is silently dropped rather than showing up in each task's log.
 setup_logging()
+
+# setup_logging() hardcodes its stderr sink to colorize=True with no override param.
+# Airflow 3 wraps every captured stderr line as a JSON {"event": "..."} record, so the
+# ANSI colour escape codes baked into that string show up as literal control-character
+# garbage rather than actual colour wherever the log is read - re-registering loguru's
+# sink here (reaching into its internals, since easy_logging doesn't expose this) swaps
+# in a plain-text line that reads like a conventional log line instead.
+loguru_logger.remove()
+loguru_logger.add(
+    sys.stderr,
+    level="INFO",
+    colorize=False,
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
+)
 
 logger = getLogger(__name__)
 
