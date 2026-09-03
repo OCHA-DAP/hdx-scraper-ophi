@@ -24,7 +24,7 @@ from logging import getLogger
 from os.path import join
 from typing import Any
 
-from airflow.sdk import DAG, dag, task
+from airflow.sdk import DAG, TriggerRule, dag, task
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.location.country import Country
@@ -248,9 +248,11 @@ def country_mpi_dataset(
     standardised_country_data: dict,
     showcase_links: dict,
     run_id: str,
-) -> str:
-    """Returns the run's scratch folder (where this country's CSVs were written) so
-    tests/callers can locate the output without reaching into resource internals."""
+) -> dict:
+    """Returns a small result dict ({countryiso3, status, folder}) rather than just the
+    folder - summarize_country_results() collects these across every mapped instance so
+    a single downstream task can report per-country outcomes without anyone having to
+    open all ~109 individual task logs."""
     setup_hdx_configuration(hdx_site=HDX_SITE, read_only=READ_ONLY)
     check_organization_access(READ_ONLY)
     with retriever_context(run_id) as r:
@@ -258,7 +260,7 @@ def country_mpi_dataset(
             countryiso3
         )
         if not standardised_country:
-            return r.folder
+            return {"countryiso3": countryiso3, "status": "no_data", "folder": r.folder}
         standardised_country_trend = standardised_country_data[
             "standardised_countries_trend"
         ].get(countryiso3, {})
@@ -278,7 +280,11 @@ def country_mpi_dataset(
             date_range,
         )
         if dataset is None:
-            return r.folder
+            return {
+                "countryiso3": countryiso3,
+                "status": "no_dataset",
+                "folder": r.folder,
+            }
         dataset.add_country_location(countryiso3)
         dataset.set_expected_update_frequency("As needed")
         dataset.update_from_yaml(_config_path("hdx_dataset_static.yaml"))
@@ -287,7 +293,65 @@ def country_mpi_dataset(
         if showcase and not READ_ONLY:
             showcase.create_in_hdx()
             showcase.add_dataset(dataset)
-        return r.folder
+        status = "read_only" if READ_ONLY else "created"
+        return {"countryiso3": countryiso3, "status": status, "folder": r.folder}
+
+
+def summarize_country_results(iso3_list: list[str], ti: Any, dag_run: Any) -> None:
+    """Single end-of-run task that pulls every country_mpi_dataset mapped instance's
+    result over XCom and logs one consolidated summary - the built-in alternative to
+    opening each of the ~109 per-country task logs individually. Runs even if some
+    country tasks failed (trigger_rule=all_done, set where this is wired up below).
+
+    For any country missing from the pulled results (failed, or still running), this
+    also inlines that mapped instance's full log file content into this task's own log
+    - reading it directly off disk (this only works for the default local-file log
+    handler on a self-hosted, single-machine setup like this one; a remote logging
+    backend, e.g. Elasticsearch, or a distributed executor with no shared filesystem,
+    would need TaskLogReader/the API instead) - so every failure is visible in one
+    place without hunting down each country's own task log individually.
+    """
+    from collections import Counter
+    from pathlib import Path
+
+    from airflow.configuration import conf
+
+    raw_results = ti.xcom_pull(task_ids="country_mpi_dataset") or []
+    results = [r for r in raw_results if r is not None]
+    reported = {r["countryiso3"] for r in results}
+    missing = sorted(set(iso3_list) - reported)
+
+    counts = Counter(r["status"] for r in results)
+    logger.info(
+        f"country_mpi_dataset summary: {len(iso3_list)} countries total, "
+        f"{dict(counts)}, {len(missing)} did not report (failed or still running)."
+    )
+    if not missing:
+        return
+
+    logger.info(f"Countries with no result: {', '.join(missing)}")
+    base_log_folder = Path(conf.get("logging", "base_log_folder"))
+    for countryiso3 in missing:
+        map_index = iso3_list.index(countryiso3)
+        task_log_dir = (
+            base_log_folder
+            / f"dag_id={dag_run.dag_id}"
+            / f"run_id={dag_run.run_id}"
+            / "task_id=country_mpi_dataset"
+            / f"map_index={map_index}"
+        )
+        attempt_logs = sorted(task_log_dir.glob("attempt=*.log"))
+        if not attempt_logs:
+            logger.info(
+                f"--- {countryiso3} (map_index={map_index}): no log file found at "
+                f"{task_log_dir} ---"
+            )
+            continue
+        log_file = attempt_logs[-1]
+        logger.info(
+            f"--- {countryiso3} (map_index={map_index}) full log: {log_file} ---"
+        )
+        logger.info(log_file.read_text())
 
 
 @dag(
@@ -325,10 +389,18 @@ def ophi_pipeline() -> None:
     )
 
     iso3_list = task(country_iso3_list)(standardised["standardised_country_data"])
-    task(country_mpi_dataset).partial(
-        standardised_country_data=standardised["standardised_country_data"],
-        showcase_links=links,
-    ).expand(countryiso3=iso3_list)
+    country_results = (
+        task(country_mpi_dataset)
+        .partial(
+            standardised_country_data=standardised["standardised_country_data"],
+            showcase_links=links,
+        )
+        .expand(countryiso3=iso3_list)
+    )
+    summary = task(summarize_country_results, trigger_rule=TriggerRule.ALL_DONE)(
+        iso3_list
+    )
+    country_results >> summary
 
 
 dag_object: DAG = ophi_pipeline()

@@ -132,13 +132,15 @@ class TestOPHIAirflowDefs:
             )
         assert isfile(join(folder, "hdx_hapi_poverty_rate_global.csv"))
 
-        country_folder = dag.country_mpi_dataset(
+        country_result = dag.country_mpi_dataset(
             "AFG", standardised["standardised_country_data"], links, run_id
         )
+        assert country_result["countryiso3"] == "AFG"
+        assert country_result["status"] == "read_only"
         for filename in ("AFG_mpi.csv", "AFG_mpi_trends.csv"):
             assert_files_same(
                 join(fixtures_dir, filename),
-                join(country_folder, filename),
+                join(country_result["folder"], filename),
             )
 
     def test_target_run_day(self):
@@ -199,4 +201,37 @@ class TestOPHIAirflowDefs:
             "global_mpi_dataset",
             "hapi_poverty_rate_dataset",
             "country_mpi_dataset",
+            "summarize_country_results",
         }
+
+    def test_summarize_country_results(self, monkeypatch, tmp_path, caplog):
+        from types import SimpleNamespace
+
+        from airflow.configuration import conf
+
+        log_dir = (
+            tmp_path
+            / "dag_id=ophi_pipeline"
+            / "run_id=test-run"
+            / "task_id=country_mpi_dataset"
+            / "map_index=1"
+        )
+        log_dir.mkdir(parents=True)
+        (log_dir / "attempt=1.log").write_text("boom: rate limited\n")
+
+        monkeypatch.setattr(conf, "get", lambda *a, **k: str(tmp_path))
+        fake_ti = SimpleNamespace(
+            xcom_pull=lambda task_ids: [
+                {"countryiso3": "AFG", "status": "read_only", "folder": "/tmp/x"},
+                None,
+            ]
+        )
+        fake_dag_run = SimpleNamespace(dag_id="ophi_pipeline", run_id="test-run")
+
+        with caplog.at_level(logging.INFO):
+            dag.summarize_country_results(["AFG", "AGO"], fake_ti, fake_dag_run)
+
+        messages = "\n".join(caplog.messages)
+        assert "1 did not report" in messages
+        assert "AGO" in messages
+        assert "boom: rate limited" in messages
