@@ -320,6 +320,39 @@ def country_mpi_dataset(
         return {"countryiso3": countryiso3, "status": status, "folder": r.folder}
 
 
+def _render_task_log(log_file: Any) -> str:
+    """Reformat an Airflow 3 JSON-lines task log file into conventional plain-text
+    lines for inlining into another task's log - dropping the per-line context keys
+    that are redundant once you already know which task/run this is (logger, ti_id,
+    try_number, map_index, dag_id, task_id, run_id, filename, lineno), and rendering a
+    "Task failed with exception" record's error_detail as a short exception chain
+    (exc_type: exc_value per exception) instead of the full frame-by-frame traceback for
+    every exception in the chain, which otherwise makes each failure a huge wall of
+    JSON that buries the actual error under stack-frame noise.
+    """
+    import json
+
+    lines = []
+    for raw_line in log_file.read_text().splitlines():
+        raw_line = raw_line.strip()
+        if not raw_line:
+            continue
+        try:
+            record = json.loads(raw_line)
+        except json.JSONDecodeError:
+            lines.append(raw_line)
+            continue
+        timestamp = record.get("timestamp", "")[:19].replace("T", " ")
+        level = record.get("level", "info").upper()
+        lines.append(f"{timestamp} {level:<8} {record.get('event', '')}")
+        for exc in record.get("error_detail") or []:
+            lines.append(
+                f"{timestamp} {level:<8}   "
+                f"{exc.get('exc_type', '?')}: {exc.get('exc_value', '')}"
+            )
+    return "\n".join(lines)
+
+
 def summarize_country_results(iso3_list: list[str], ti: Any, dag_run: Any) -> None:
     """Single end-of-run task that pulls every country_mpi_dataset mapped instance's
     result over XCom and logs one consolidated summary - the built-in alternative to
@@ -374,7 +407,7 @@ def summarize_country_results(iso3_list: list[str], ti: Any, dag_run: Any) -> No
         logger.info(
             f"--- {countryiso3} (map_index={map_index}) full log: {log_file} ---"
         )
-        logger.info(log_file.read_text())
+        logger.info(_render_task_log(log_file))
 
 
 @dag(

@@ -106,11 +106,14 @@ def retriever_context(
 
     delete_scratch_on_success defaults to False here (unlike RetrieverResource, which
     defaults to True): the folder is shared by every task in the run (see module
-    docstring), and temp_dir_batch() deletes it outright on a successful exit - since
-    several tasks in this DAG run concurrently against the same folder (e.g. the four
-    downloads, or the country_mpi_dataset fan-out), one task finishing first would
-    delete the folder while another was still reading/writing it. Dagster's equivalent
-    race is avoided by pinning ophi_core_job to in_process_executor instead (see
+    docstring), and temp_dir_batch() deletes it outright on exit - since several tasks
+    in this DAG run concurrently against the same folder (e.g. the four downloads, or
+    the country_mpi_dataset fan-out), one task finishing (or failing) first would delete
+    the folder while another was still reading/writing it. delete_on_failure is fixed to
+    False below for the identical reason on the failure path - a real 429-rate-limited
+    task failure was otherwise masked by a spurious FileNotFoundError from a sibling
+    task's cleanup racing to delete the same folder. Dagster's equivalent race is
+    avoided by pinning ophi_core_job to in_process_executor instead (see
     dagster_defs/jobs_schedules.py) - not an option here since every Airflow task is
     already its own process by design. Cleanup of the run's scratch folder is left as a
     manual/out-of-scope concern for this local comparison.
@@ -129,7 +132,10 @@ def retriever_context(
     with (
         Download() as downloader,
         temp_dir_batch(
-            folder_name, delete_on_success=delete_scratch_on_success, batch=batch
+            folder_name,
+            delete_on_success=delete_scratch_on_success,
+            delete_on_failure=False,
+            batch=batch,
         ) as info,
     ):
         folder = str(info["folder"])

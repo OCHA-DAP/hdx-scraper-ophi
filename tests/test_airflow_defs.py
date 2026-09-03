@@ -1,3 +1,4 @@
+import json
 import logging
 from os.path import isfile, join
 
@@ -217,7 +218,16 @@ class TestOPHIAirflowDefs:
             / "map_index=1"
         )
         log_dir.mkdir(parents=True)
-        (log_dir / "attempt=1.log").write_text("boom: rate limited\n")
+        log_record = {
+            "timestamp": "2026-09-03T05:11:14.201138Z",
+            "level": "error",
+            "event": "Task failed with exception",
+            "logger": "task",
+            "error_detail": [
+                {"exc_type": "RetryError", "exc_value": "boom: rate limited"}
+            ],
+        }
+        (log_dir / "attempt=1.log").write_text(json.dumps(log_record) + "\n")
 
         monkeypatch.setattr(conf, "get", lambda *a, **k: str(tmp_path))
         fake_ti = SimpleNamespace(
@@ -234,4 +244,7 @@ class TestOPHIAirflowDefs:
         messages = "\n".join(caplog.messages)
         assert "1 did not report" in messages
         assert "AGO" in messages
-        assert "boom: rate limited" in messages
+        # error_detail rendered as a short exception-chain line, not a raw JSON dump.
+        assert "RetryError: boom: rate limited" in messages
+        assert '"logger"' not in messages
+        assert '"error_detail"' not in messages
