@@ -50,18 +50,25 @@ from hdx.scraper.ophi.pipeline import Pipeline
 # handler and is silently dropped rather than showing up in each task's log.
 setup_logging()
 
-# setup_logging() hardcodes its stderr sink to colorize=True with no override param.
-# Airflow 3 wraps every captured stderr line as a JSON {"event": "..."} record, so the
-# ANSI colour escape codes baked into that string show up as literal control-character
-# garbage rather than actual colour wherever the log is read - re-registering loguru's
-# sink here (reaching into its internals, since easy_logging doesn't expose this) swaps
-# in a plain-text line that reads like a conventional log line instead.
+# setup_logging() hardcodes a stderr sink with colorize=True and no override param.
+# Airflow 3 always wraps a task's captured output as one JSON record per line (this is
+# how the Task SDK ships logs to the supervisor process - not configurable away, per
+# https://github.com/apache/airflow/discussions/53006), tagging each record's "level"
+# purely by which stream it came from: stderr -> "error", stdout -> "info", regardless
+# of the line's actual content. So writing to stderr made every one of our plain INFO
+# messages show up mislabelled "error", on top of embedding ANSI colour codes as literal
+# garbage in that JSON string. Re-registering loguru's sink here (reaching into its
+# internals, since easy_logging doesn't expose either of these) fixes both: stdout
+# instead of stderr gets the level tagged correctly by Airflow's own wrapper, so
+# {level:...} is dropped from our own format string too (kept, it would just repeat
+# what the wrapper's own "level" field already says); dropping {time:...} for the same
+# reason avoids duplicating the wrapper's own "timestamp" field.
 loguru_logger.remove()
 loguru_logger.add(
-    sys.stderr,
+    sys.stdout,
     level="INFO",
     colorize=False,
-    format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
+    format="{name}:{function}:{line} - {message}",
 )
 
 logger = getLogger(__name__)
