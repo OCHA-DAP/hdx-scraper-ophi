@@ -323,12 +323,13 @@ def country_mpi_dataset(
 def _render_task_log(log_file: Any) -> str:
     """Reformat an Airflow 3 JSON-lines task log file into conventional plain-text
     lines for inlining into another task's log - dropping the per-line context keys
-    that are redundant once you already know which task/run this is (timestamp, logger,
-    ti_id, try_number, map_index, dag_id, task_id, run_id, filename, lineno - the
-    original per-line timestamp is dropped too, since Airflow's own JSON wrapper already
-    timestamps the line this ends up inlined into, and showing both looked like a
-    duplicate), and rendering a "Task failed with exception" record's error_detail as a
-    short exception chain (exc_type: exc_value per exception) instead of the full
+    that are redundant once you already know which task/run this is (logger, ti_id,
+    try_number, map_index, dag_id, task_id, run_id, filename, lineno), keeping each
+    line's own original timestamp (when that line was actually logged, as opposed to
+    the timestamp Airflow's own JSON wrapper stamps on the summarize_country_results
+    line this ends up inlined into, which is just whenever that task happened to run),
+    and rendering a "Task failed with exception" record's error_detail as a short
+    exception chain (exc_type: exc_value per exception) instead of the full
     frame-by-frame traceback for every exception in the chain, which otherwise makes
     each failure a huge wall of JSON that buries the actual error under stack-frame
     noise.
@@ -345,11 +346,13 @@ def _render_task_log(log_file: Any) -> str:
         except json.JSONDecodeError:
             lines.append(raw_line)
             continue
+        timestamp = record.get("timestamp", "")[:19].replace("T", " ")
         level = record.get("level", "info").upper()
-        lines.append(f"{level:<8} {record.get('event', '')}")
+        lines.append(f"{timestamp} {level:<8} {record.get('event', '')}")
         for exc in record.get("error_detail") or []:
             lines.append(
-                f"{level:<8}   {exc.get('exc_type', '?')}: {exc.get('exc_value', '')}"
+                f"{timestamp} {level:<8}   "
+                f"{exc.get('exc_type', '?')}: {exc.get('exc_value', '')}"
             )
     return "\n".join(lines)
 
@@ -400,14 +403,11 @@ def summarize_country_results(iso3_list: list[str], ti: Any, dag_run: Any) -> No
         attempt_logs = sorted(task_log_dir.glob("attempt=*.log"))
         if not attempt_logs:
             logger.info(
-                f"--- {countryiso3} (map_index={map_index}): no log file found at "
-                f"{task_log_dir} ---"
+                f"Log output for {countryiso3}: no log file found at {task_log_dir}"
             )
             continue
         log_file = attempt_logs[-1]
-        logger.info(
-            f"--- {countryiso3} (map_index={map_index}) full log: {log_file} ---"
-        )
+        logger.info(f"Log output for {countryiso3}:")
         logger.info(_render_task_log(log_file))
 
 
