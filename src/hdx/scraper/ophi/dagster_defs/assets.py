@@ -173,7 +173,9 @@ def global_mpi_dataset(
     dataset.update_from_yaml(_config_path(dataset, "hdx_dataset_static.yaml"))
     # hdx-python-api's hdx_read_only flag is advisory only - it does not itself stop
     # create_in_hdx() from making a real HDX write, so the actual write is gated here.
-    if not hdx_config.read_only:
+    if hdx_config.read_only:
+        logger.info(f"read_only=True: not writing dataset '{dataset['name']}' to HDX.")
+    else:
         dataset.create_in_hdx(
             remove_additional_resources=True,
             updated_by_script="HDX Scraper: OPHI",
@@ -220,7 +222,9 @@ def hapi_poverty_rate_dataset(
     time_period = global_mpi_dataset.time_period
     dataset.set_time_period(time_period["startdate"], time_period["enddate"])
     dataset.update_from_yaml(_config_path(dataset, "hdx_hapi_dataset_static.yaml"))
-    if not hdx_config.read_only:
+    if hdx_config.read_only:
+        logger.info(f"read_only=True: not writing dataset '{dataset['name']}' to HDX.")
+    else:
         dataset.create_in_hdx(
             remove_additional_resources=True,
             updated_by_script="HDX Scraper: OPHI",
@@ -272,7 +276,11 @@ def country_mpi_dataset(
     dataset.add_country_location(countryiso3)
     dataset.set_expected_update_frequency("As needed")
     dataset.update_from_yaml(_config_path(dataset, "hdx_dataset_static.yaml"))
-    if not hdx_config.read_only:
+    if hdx_config.read_only:
+        context.log.info(
+            f"read_only=True: not writing dataset '{dataset['name']}' to HDX."
+        )
+    else:
         dataset.create_in_hdx(
             remove_additional_resources=True,
             updated_by_script="HDX Scraper: OPHI",
