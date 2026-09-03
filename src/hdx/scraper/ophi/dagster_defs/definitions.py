@@ -17,6 +17,7 @@ from hdx.scraper.ophi.dagster_defs import assets
 from hdx.scraper.ophi.dagster_defs.jobs_schedules import (
     core_job,
     country_job,
+    country_results_summary_job,
     ophi_annual_schedule,
     ophi_country_fanout_sensor,
 )
@@ -36,7 +37,7 @@ retriever_resource = RetrieverResource(save=False, use_saved=False)
 
 defs = Definitions(
     assets=load_assets_from_modules([assets]),
-    jobs=[core_job, country_job],
+    jobs=[core_job, country_job, country_results_summary_job],
     schedules=[ophi_annual_schedule],
     sensors=[ophi_country_fanout_sensor],
     resources={

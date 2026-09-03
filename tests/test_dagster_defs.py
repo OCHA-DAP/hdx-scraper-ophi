@@ -2,7 +2,7 @@ import logging
 from os.path import isfile, join
 
 import pytest
-from dagster import DagsterInstance, materialize
+from dagster import DagsterInstance, Definitions, load_assets_from_modules, materialize
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
 from hdx.data.vocabulary import Vocabulary
@@ -12,6 +12,11 @@ from hdx.utilities.path import script_dir_plus_file
 from hdx.utilities.useragent import UserAgent
 
 from hdx.scraper.ophi.dagster_defs import assets
+from hdx.scraper.ophi.dagster_defs.jobs_schedules import (
+    core_job,
+    country_job,
+    country_results_summary_job,
+)
 from hdx.scraper.ophi.dagster_defs.resources import (
     AdminOneResource,
     HDXConfigResource,
@@ -152,3 +157,71 @@ class TestOPHIDagsterDefs:
                 join(fixtures_dir, filename),
                 join(country_folder, filename),
             )
+
+    def test_country_results_summary(self, configuration, resources, monkeypatch):
+        """country_results_summary_job needs runs tagged with a real job name
+        ("ophi_country_job") to find via RunsFilter, which materialize() doesn't
+        produce (its ad hoc job has a different name) - so this resolves core_job/
+        country_job/country_results_summary_job against the test resources the same
+        way definitions.py resolves them against the real ones, then executes each
+        job for real via execute_in_process()."""
+        test_defs = Definitions(
+            assets=load_assets_from_modules([assets]),
+            jobs=[core_job, country_job, country_results_summary_job],
+            resources=resources,
+        )
+        instance = DagsterInstance.ephemeral()
+
+        core_result = test_defs.get_job_def("ophi_core_job").execute_in_process(
+            instance=instance
+        )
+        assert core_result.success
+
+        partitions = sorted(
+            instance.get_dynamic_partitions(assets.country_partitions.name)
+        )
+        assert "AFG" in partitions
+        succeeding_iso3 = next(iso3 for iso3 in partitions if iso3 != "AFG")
+
+        country_job_def = test_defs.get_job_def("ophi_country_job")
+
+        # Induce a real STEP_FAILURE for AFG specifically, so the summary job has an
+        # actual failure to detect and report - without this, a read-only test run
+        # never touches HDX and has no other way to fail.
+        original_generate_dataset = assets.DatasetGenerator.generate_dataset
+
+        def failing_generate_dataset(self, folder, standardised_country, *args):
+            if (
+                args[1] == "AFG"
+            ):  # args = (standardised_country_trend, countryiso3, ...)
+                raise RuntimeError("boom: induced failure for testing")
+            return original_generate_dataset(self, folder, standardised_country, *args)
+
+        monkeypatch.setattr(
+            assets.DatasetGenerator, "generate_dataset", failing_generate_dataset
+        )
+
+        failed_result = country_job_def.execute_in_process(
+            instance=instance, partition_key="AFG", raise_on_error=False
+        )
+        assert not failed_result.success
+
+        success_result = country_job_def.execute_in_process(
+            instance=instance, partition_key=succeeding_iso3
+        )
+        assert success_result.success
+
+        summary_result = test_defs.get_job_def(
+            "country_results_summary_job"
+        ).execute_in_process(instance=instance)
+        assert summary_result.success
+
+        # context.log.info() calls surface as plain EventLogEntry log records, not as
+        # DagsterEvents, so they aren't in .all_events (only structured lifecycle
+        # events like STEP_SUCCESS are) - instance.all_logs() returns both.
+        messages = "\n".join(
+            e.user_message for e in instance.all_logs(summary_result.run_id)
+        )
+        assert "'failed': 1" in messages
+        assert "boom: induced failure for testing" in messages
+        assert f"--- AFG (run {failed_result.run_id})" in messages
