@@ -1,0 +1,35 @@
+name: Publish to Fabric
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch: # add run button in github
+
+permissions:
+  contents: read
+  id-token: write # OIDC login to Azure
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # hatch-vcs needs tags for the version
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Build and upload to OneLake
+        env:
+          ONELAKE_FILES: ${{ vars.ONELAKE_FILES }}
+        run: ./fabric/publish.sh

@@ -32,6 +32,7 @@ class TestOPHI:
                 join("config", "project_configuration.yaml"), Pipeline
             ),
         )
+        Country.countriesdata(use_live=False)
         Locations.set_validlocations(
             [
                 {"name": "afg", "title": "Afghanistan"},

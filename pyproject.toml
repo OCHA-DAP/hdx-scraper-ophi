@@ -9,10 +9,10 @@ build-backend = "hatchling.build"
 [project]
 name = "hdx-scraper-ophi"
 dynamic = ["version"]
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
   "hdx-python-api>=6.6.5",
-  "hdx-python-country>=4.1.1",
+  "hdx-python-country>=4.1.4",
   "hdx-python-utilities>=4.0.8",
 ]
 readme = "README.md"
@@ -59,7 +59,7 @@ allow-direct-references = true
 # ----------------------------------------------------------------------------
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py312"
 src = ["src"]
 exclude = ["_version.py"]
 

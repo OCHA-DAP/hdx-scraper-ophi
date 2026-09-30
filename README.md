@@ -151,3 +151,25 @@ To run the tests and view coverage, execute:
 ```shell
     uv run pytest
 ```
+
+## Microsoft Fabric
+
+The pipeline can run as a Fabric Python notebook (Python 3.12 kernel). `fabric/publish.sh`
+builds the wheel and a locked `requirements.txt` and uploads them to
+`Files/pipelines/hdx-scraper-ophi/<version>/` in the lakehouse, updating `LATEST`
+(`ONELAKE_FILES` overrides the default `OCHA CHD DSYS dev` lakehouse). It needs an Azure CLI
+session in the Fabric tenant:
+
+```shell
+    az login --tenant <tenant-id> --allow-no-subscriptions
+    ./fabric/publish.sh
+```
+
+`fabric/hdx-scraper-ophi.ipynb` is the launcher notebook. It installs the release from the
+default lakehouse, reads the HDX API key from Key Vault (`key_vault_url`, `hdx_key_secret`)
+and runs the pipeline. Its parameters cell sets `version` (empty means `LATEST`), `hdx_site`,
+`user_agent` and `preprefix`.
+
+The `Publish to Fabric` workflow runs `publish.sh` on release. It needs the repository
+variables `AZURE_CLIENT_ID` (a service principal with a federated credential for this repo
+and Contributor on the workspace), `AZURE_TENANT_ID` and optionally `ONELAKE_FILES`.
