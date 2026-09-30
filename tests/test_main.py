@@ -86,7 +86,11 @@ class TestOPHI:
                     save=False,
                     use_saved=True,
                 )
-                adminone = AdminLevel(admin_level=1, retriever=retriever)
+                adminone = AdminLevel(
+                    admin_config=configuration["admin1"],
+                    admin_level=1,
+                    retriever=retriever,
+                )
                 adminone.setup_from_url()
 
                 pipeline = Pipeline(configuration, retriever, adminone)
