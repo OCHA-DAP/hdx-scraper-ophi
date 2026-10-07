@@ -15,10 +15,23 @@ admin1:
     "IRQ|Dohuk": "IQG09"
     "MOZ|Maputo City": "MZ11"
   admin_fuzzy_dont:
-    # Within new Bujumbura province since 2026
+    # Parts of a current admin1
     - "BDI|bujumbura mairie"
     - "BDI|bujumbura rural"
+    - "BLZ|belize (ex. belize city south side)"
+    - "BLZ|belize city south side"
+    - "COL|antioquia sin medellin"
+    - "GTM|guatemala municipio"
+    - "GTM|guatemala resto"
+    - "SLE|western area rural"
+    - "SLE|western area urban"
     # Regions spanning several current admin1s
+    - "AZE|absheron-khizi"
+    - "AZE|aran"
+    - "AZE|dahlig shirvan"
+    - "AZE|ganja gazakh"
+    - "AZE|guba khachmaz"
+    - "AZE|shaki zagatala"
     - "BRB|christ church & st. philip"
     - "CAF|ouham, ouham-pendé"
     - "CIV|goh-djiboua"
