@@ -1,18 +1,37 @@
 admin1:
   admin_name_mappings:
     "BGD|Chattogram": "BD20"
+    # COD has English names
+    "CMR|Est": "CM003"
+    "CMR|Extrême-Nord": "CM004"
+    "CMR|Ouest": "CM008"
+    "CMR|Sud": "CM009"
+    "CMR|Sud-Ouest": "CM010"
     # Renamed Kongo Central in 2015
     "COD|Bas-Congo": "CD20"
     "IDN|North Maluku": "ID82"
     "IDN|Riau Islands": "ID21"
     "IDN|West Papua": "ID91"
     "IRQ|Dohuk": "IQG09"
-    "KAZ|Almaty Oblast": "KAZ005"
-    # Renamed Turkistan Region in 2018
-    "KAZ|South Kasakhstan": "KAZ018"
-    "KAZ|South Kazkahstan": "KAZ018"
+    "MOZ|Maputo City": "MZ11"
   admin_fuzzy_dont:
+    # Parts of a current admin1
+    - "BDI|bujumbura mairie"
+    - "BDI|bujumbura rural"
+    - "BLZ|belize (ex. belize city south side)"
+    - "BLZ|belize city south side"
+    - "COL|antioquia sin medellin"
+    - "GTM|guatemala municipio"
+    - "GTM|guatemala resto"
+    - "SLE|western area rural"
+    - "SLE|western area urban"
     # Regions spanning several current admin1s
+    - "AZE|absheron-khizi"
+    - "AZE|aran"
+    - "AZE|dahlig shirvan"
+    - "AZE|ganja gazakh"
+    - "AZE|guba khachmaz"
+    - "AZE|shaki zagatala"
     - "BRB|christ church & st. philip"
     - "CAF|ouham, ouham-pendé"
     - "CIV|goh-djiboua"
@@ -24,6 +43,7 @@ admin1:
     - "JAM|kingston metropolitan area"
     - "KEN|nyanza"
     - "MDA|center"
+    - "MDG|vatovavy fitovinany"
     - "TCD|borkou-ennedi-tibesti"
 
 datasetinfo:
