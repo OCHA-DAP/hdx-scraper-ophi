@@ -1,17 +1,23 @@
 admin1:
   admin_name_mappings:
     "BGD|Chattogram": "BD20"
+    # COD has English names
+    "CMR|Est": "CM003"
+    "CMR|Extrême-Nord": "CM004"
+    "CMR|Ouest": "CM008"
+    "CMR|Sud": "CM009"
+    "CMR|Sud-Ouest": "CM010"
     # Renamed Kongo Central in 2015
     "COD|Bas-Congo": "CD20"
     "IDN|North Maluku": "ID82"
     "IDN|Riau Islands": "ID21"
     "IDN|West Papua": "ID91"
     "IRQ|Dohuk": "IQG09"
-    "KAZ|Almaty Oblast": "KAZ005"
-    # Renamed Turkistan Region in 2018
-    "KAZ|South Kasakhstan": "KAZ018"
-    "KAZ|South Kazkahstan": "KAZ018"
+    "MOZ|Maputo City": "MZ11"
   admin_fuzzy_dont:
+    # Within new Bujumbura province since 2026
+    - "BDI|bujumbura mairie"
+    - "BDI|bujumbura rural"
     # Regions spanning several current admin1s
     - "BRB|christ church & st. philip"
     - "CAF|ouham, ouham-pendé"
@@ -24,6 +30,7 @@ admin1:
     - "JAM|kingston metropolitan area"
     - "KEN|nyanza"
     - "MDA|center"
+    - "MDG|vatovavy fitovinany"
     - "TCD|borkou-ennedi-tibesti"
 
 datasetinfo:
