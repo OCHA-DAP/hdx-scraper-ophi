@@ -1,3 +1,4 @@
+import json
 import logging
 from os.path import join
 
@@ -100,6 +101,9 @@ class TestOPHI:
                     mpi_national_path,
                     mpi_subnational_path,
                     trend_path,
+                )
+                data_dictionary = json.dumps(
+                    configuration["data_dictionary"], separators=(",", ":")
                 )
 
                 standardised_global = pipeline.get_standardised_global()
@@ -291,6 +295,7 @@ class TestOPHI:
                         "format": "csv",
                         "name": "Global MPI and Partial Indices",
                         "p_coded": True,
+                        "hdx_data_dictionary": data_dictionary,
                     },
                     {
                         "description": "This resource contains standardised MPI estimates and their "
@@ -301,6 +306,7 @@ class TestOPHI:
                         "format": "csv",
                         "name": "Global MPI Trends Over Time",
                         "p_coded": True,
+                        "hdx_data_dictionary": data_dictionary,
                     },
                     {
                         "description": "This table shows the MPI and its partial indices",
@@ -450,6 +456,7 @@ class TestOPHI:
                         "format": "csv",
                         "name": "Afghanistan MPI and Partial Indices",
                         "p_coded": True,
+                        "hdx_data_dictionary": data_dictionary,
                     },
                     {
                         "description": "This resource contains standardised MPI estimates and their "
@@ -460,6 +467,7 @@ class TestOPHI:
                         "format": "csv",
                         "name": "Afghanistan MPI Trends Over Time",
                         "p_coded": True,
+                        "hdx_data_dictionary": data_dictionary,
                     },
                 ]
                 for filename in ("AFG_mpi.csv", "AFG_mpi_trends.csv"):

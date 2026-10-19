@@ -38,6 +38,7 @@ class DatasetGenerator:
         self._mpi_subnational_path = mpi_subnational_path
         self._trend_path = trend_path
         self._headers = configuration["headers"]
+        self._data_dictionary = configuration["data_dictionary"]
 
     def load_showcase_links(self, retriever: Retrieve) -> None:
         url = self._configuration["showcaseinfo"]["urls"]
@@ -69,6 +70,8 @@ class DatasetGenerator:
             resourcedata,
             self._headers,
         )
+        if success:
+            results["resource"].set_hdx_data_dictionary(self._data_dictionary)
         return success
 
     def _slugified_name(self, name: str) -> str:
