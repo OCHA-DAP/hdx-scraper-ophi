@@ -85,7 +85,7 @@ headers:
    - "Start Date"
    - "End Date"
 
-# Columns of MPI and MPI trends resources (schema_001 in
+# Columns of global MPI and MPI trends resources (schema_001 in
 # oxford-poverty-human-development-initiative_schemas.xlsx)
 data_dictionary:
   - field: Country ISO3

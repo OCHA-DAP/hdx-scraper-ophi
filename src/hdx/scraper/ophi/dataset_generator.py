@@ -70,8 +70,6 @@ class DatasetGenerator:
             resourcedata,
             self._headers,
         )
-        if success:
-            results["resource"].set_hdx_data_dictionary(self._data_dictionary)
         return success
 
     def _slugified_name(self, name: str) -> str:
@@ -187,6 +185,8 @@ class DatasetGenerator:
             "Global",
             date_range,
         )
+        for resource in dataset.get_resources():
+            resource.set_hdx_data_dictionary(self._data_dictionary)
         dataset.set_expected_update_frequency("As needed")
 
         resource_descriptions = self._configuration["resource_descriptions"]

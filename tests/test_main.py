@@ -456,7 +456,6 @@ class TestOPHI:
                         "format": "csv",
                         "name": "Afghanistan MPI and Partial Indices",
                         "p_coded": True,
-                        "hdx_data_dictionary": data_dictionary,
                     },
                     {
                         "description": "This resource contains standardised MPI estimates and their "
@@ -467,7 +466,6 @@ class TestOPHI:
                         "format": "csv",
                         "name": "Afghanistan MPI Trends Over Time",
                         "p_coded": True,
-                        "hdx_data_dictionary": data_dictionary,
                     },
                 ]
                 for filename in ("AFG_mpi.csv", "AFG_mpi_trends.csv"):
