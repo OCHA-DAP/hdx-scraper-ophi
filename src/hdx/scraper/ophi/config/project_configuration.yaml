@@ -111,7 +111,7 @@ data_dictionary:
   - field: Intensity of Deprivation
     label: Intensity of deprivation
     data_type: numeric
-    description: "Average % of weighted indicators poor are deprived in"
+    description: "Average % of weighted deprivations experienced by poor people"
   - field: Vulnerable to Poverty
     label: Vulnerable to poverty
     data_type: numeric
