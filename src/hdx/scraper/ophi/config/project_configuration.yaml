@@ -95,11 +95,11 @@ data_dictionary:
   - field: Admin 1 PCode
     label: Admin 1 P-code
     data_type: text
-    description: "Admin 1 P-code, empty for national rows"
+    description: "Admin 1 P-code, empty for national rows or unmatched regions"
   - field: Admin 1 Name
     label: Admin 1 name
     data_type: text
-    description: "Admin 1 name, empty for national rows"
+    description: "Survey region, mostly admin 1, some admin 2; empty if national"
   - field: MPI
     label: MPI
     data_type: numeric
@@ -123,7 +123,7 @@ data_dictionary:
   - field: Survey
     label: Survey
     data_type: text
-    description: "Source household survey, e.g. DHS, MICS, PAPFAM"
+    description: "Survey or data source used for estimates, e.g. DHS, MICS"
   - field: Start Date
     label: Start date
     data_type: timestamp without time zone
