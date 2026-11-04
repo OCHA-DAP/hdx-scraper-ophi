@@ -115,7 +115,7 @@ data_dictionary:
   - field: Vulnerable to Poverty
     label: Vulnerable to poverty
     data_type: numeric
-    description: "Vulnerable to multidimensional poverty: Percentage of the population experiencing a weighted deprivation score of 20% or more but less than 33.33%."
+    description: "Percentage of the population experiencing a weighted deprivation score of 20% or more but less than 33.33%."
   - field: In Severe Poverty
     label: In severe poverty
     data_type: numeric
