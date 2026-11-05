@@ -103,8 +103,8 @@ class Pipeline:
             "Multidimensional poverty Multidimensional Poverty Index (MPI = H*A) Range 0 to 1",
             "Multidimensional poverty Headcount ratio: Population in multidimensional poverty (H) % Population",
             "Multidimensional poverty Intensity of deprivation among the poor (A) Average % of weighted deprivations",
-            "Multidimensional poverty Vulnerable to poverty (who experience 20-33.32% intensity of deprivations) % Population",
-            "Multidimensional poverty In severe poverty (severity 50% or higher) % Population",
+            "Multidimensional poverty Vulnerable to poverty (who experience 20-33.32% of deprivation) % Population",
+            "Multidimensional poverty In severe poverty (who experience 50% or more deprivations) % Population",
         )
         _, iterator = self._retriever.downloader.get_tabular_rows(
             path,
@@ -143,8 +143,8 @@ class Pipeline:
             "Multidimensional poverty by region Multidimensional Poverty Index (MPI = H*A) Range 0 to 1",
             "Multidimensional poverty by region Headcount ratio: Population in multidimensional poverty (H) % Population",
             "Multidimensional poverty by region Intensity of deprivation among the poor (A) Average % of weighted deprivations",
-            "Multidimensional poverty by region Vulnerable to poverty % Population",
-            "Multidimensional poverty by region In severe poverty % Population",
+            "Multidimensional poverty by region Vulnerable to poverty (who experience 20-33.32% of deprivation) % Population",
+            "Multidimensional poverty by region In severe poverty (who experience 50% or more deprivations) % Population",
         )
         _, iterator = self._retriever.downloader.get_tabular_rows(
             path,
