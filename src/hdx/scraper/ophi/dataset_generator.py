@@ -98,8 +98,8 @@ class DatasetGenerator:
         return f"{countryname} Multidimensional Poverty Index"
 
     @staticmethod
-    def get_name(countryname: str) -> str:
-        return f"{countryname} MPI"
+    def get_name(countryiso3: str) -> str:
+        return f"{countryiso3} MPI"
 
     def generate_showcase(
         self,
@@ -109,7 +109,7 @@ class DatasetGenerator:
         url = self._showcase_links.get(countryiso3)
         if not url:
             return None
-        name = self.get_name(countryname)
+        name = self.get_name(countryiso3)
         title = self.get_title(countryname)
         showcase = Showcase(
             {
@@ -135,7 +135,7 @@ class DatasetGenerator:
         if not standardised_rows and not standardised_trend_rows:
             return None
         title = self.get_title(countryname)
-        name = self.get_name(countryname)
+        name = self.get_name(countryiso3)
         dataset = self.generate_dataset_metadata(title, name)
         dataset.set_time_period(date_range["start"], date_range["end"])
         resource_descriptions = self._configuration["resource_descriptions"]

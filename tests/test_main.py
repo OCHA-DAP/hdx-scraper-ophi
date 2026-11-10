@@ -395,7 +395,7 @@ class TestOPHI:
                 assert dataset == {
                     "dataset_date": "[2015-01-01T00:00:00 TO 2023-12-31T23:59:59]",
                     "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
-                    "name": "afghanistan-mpi",
+                    "name": "afg-mpi",
                     "owner_org": "00547685-9ded-4d69-9ca5-47d5278ead7c",
                     "subnational": "1",
                     "tags": [
@@ -494,7 +494,7 @@ class TestOPHI:
                 showcase = dataset_generator.generate_showcase(countryiso3, countryname)
                 assert showcase == {
                     "image_url": "https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-ophi/main/ophi_mpi.jpg",
-                    "name": "afghanistan-mpi-showcase",
+                    "name": "afg-mpi-showcase",
                     "notes": "The visual contains sub-national multidimensional poverty data from "
                     "the country briefs published by the Oxford Poverty and Human "
                     "Development Initiative (OPHI), University of Oxford.",
