@@ -11,8 +11,8 @@ name = "hdx-scraper-ophi"
 dynamic = ["version"]
 requires-python = ">=3.13"
 dependencies = [
-  "hdx-python-api>=6.7.3",
-  "hdx-python-country>=4.2.2",
+  "hdx-python-api>=6.7.9",
+  "hdx-python-country>=4.3.1",
   "hdx-python-utilities>=4.2.7",
 ]
 readme = "README.md"
