@@ -132,7 +132,7 @@ class DatasetGenerator:
         countryname: str,
         date_range: dict,
     ) -> Dataset | None:
-        if not standardised_rows:
+        if not standardised_rows and not standardised_trend_rows:
             return None
         title = self.get_title(countryname)
         name = self.get_name(countryname)
@@ -140,20 +140,21 @@ class DatasetGenerator:
         dataset.set_time_period(date_range["start"], date_range["end"])
         resource_descriptions = self._configuration["resource_descriptions"]
 
-        resource_name = f"{countryname} MPI and Partial Indices"
-        filename = f"{countryiso3}_mpi.csv"
-        success = self.generate_resource(
-            dataset,
-            resource_name,
-            resource_descriptions["standardised_mpi"],
-            (standardised_rows[key] for key in sorted(standardised_rows)),
-            folder,
-            filename,
-            p_coded=True,
-        )
-        if success is False:
-            logger.warning(f"{name} has no data!")
-            return None
+        if standardised_rows:
+            resource_name = f"{countryname} MPI and Partial Indices"
+            filename = f"{countryiso3}_mpi.csv"
+            success = self.generate_resource(
+                dataset,
+                resource_name,
+                resource_descriptions["standardised_mpi"],
+                (standardised_rows[key] for key in sorted(standardised_rows)),
+                folder,
+                filename,
+                p_coded=True,
+            )
+            if success is False:
+                logger.warning(f"{name} has no data!")
+                return None
 
         resource_name = f"{countryname} MPI Trends Over Time"
         filename = f"{countryiso3}_mpi_trends.csv"

@@ -89,7 +89,10 @@ def main(
             standardised_countries_trend = pipeline.get_standardised_countries_trend()
             date_ranges = pipeline.get_date_ranges()
             global_date_range = date_ranges["global"]
-            countries_with_data = list(standardised_countries.keys())
+            # Some countries only appear in the trends table
+            countries_with_data = sorted(
+                set(standardised_countries) | set(standardised_countries_trend)
+            )
 
             dataset = dataset_generator.generate_global_dataset(
                 folder,
@@ -119,8 +122,8 @@ def main(
 
             if create_country_datasets:
                 dataset_generator.load_showcase_links(retriever)
-                for countryiso3 in sorted(standardised_countries):
-                    standardised_country = standardised_countries[countryiso3]
+                for countryiso3 in countries_with_data:
+                    standardised_country = standardised_countries.get(countryiso3, {})
                     countryname = Country.get_country_name_from_iso3(countryiso3)
                     standardised_country_trend = standardised_countries_trend.get(
                         countryiso3, {}
@@ -133,6 +136,8 @@ def main(
                         countryname,
                         date_ranges[countryiso3],
                     )
+                    if not dataset:
+                        continue
                     dataset.add_country_location(countryiso3)
                     dataset.set_expected_update_frequency("As needed")
                     update_dataset(dataset)

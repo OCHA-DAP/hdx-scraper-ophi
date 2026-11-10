@@ -468,6 +468,28 @@ class TestOPHI:
                     expected_file = join(fixtures_dir, filename)
                     actual_file = join(tempdir, filename)
                     assert_files_same(expected_file, actual_file)
+
+                # BIH is in the trends table but not the national/subnational tables
+                trend_only = sorted(
+                    set(standardised_countries_trend) - set(standardised_countries)
+                )
+                assert trend_only == ["BIH", "MDA", "NAM", "NIC", "UKR"]
+                countryiso3 = "BIH"
+                countryname = Country.get_country_name_from_iso3(countryiso3)
+                dataset = dataset_generator.generate_dataset(
+                    tempdir,
+                    {},
+                    standardised_countries_trend[countryiso3],
+                    countryiso3,
+                    countryname,
+                    date_ranges[countryiso3],
+                )
+                assert [x["name"] for x in dataset.get_resources()] == [
+                    "Bosnia and Herzegovina MPI Trends Over Time"
+                ]
+
+                countryiso3 = "AFG"
+                countryname = Country.get_country_name_from_iso3(countryiso3)
                 dataset_generator.load_showcase_links(retriever)
                 showcase = dataset_generator.generate_showcase(countryiso3, countryname)
                 assert showcase == {
