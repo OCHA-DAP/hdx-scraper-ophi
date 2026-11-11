@@ -23,8 +23,20 @@ class HAPIOutput:
 
     def create_rows(self, rows: dict, dataset_id: str, resource_id: str) -> None:
         for row in rows.values():
-            output_row = {}
             countryiso3 = row["Country ISO3"]
+            provider_admin1_name = row["Admin 1 Name"]
+            admin1_code = row["Admin 1 PCode"] or ""
+            key = (
+                countryiso3,
+                provider_admin1_name,
+                admin1_code,
+                row["End Date"],
+            )
+            # Official MPI rows are processed first and take precedence over
+            # harmonised trend rows for the same location and survey
+            if key in self._rows:
+                continue
+            output_row = {}
             output_row["location_code"] = countryiso3
             output_row["has_hrp"] = (
                 "Y" if Country.get_hrp_status_from_iso3(countryiso3) else "N"
@@ -32,15 +44,12 @@ class HAPIOutput:
             output_row["in_gho"] = (
                 "Y" if Country.get_gho_status_from_iso3(countryiso3) else "N"
             )
-            provider_admin1_name = row["Admin 1 Name"]
             output_row["provider_admin1_name"] = provider_admin1_name
-            admin1_code = row["Admin 1 PCode"]
+            output_row["admin1_code"] = admin1_code
             if admin1_code:
-                output_row["admin1_code"] = admin1_code
                 output_row["admin1_name"] = self._adminone.pcode_to_name[admin1_code]
                 output_row["admin_level"] = 1
             else:
-                output_row["admin1_code"] = ""
                 output_row["admin1_name"] = ""
                 if provider_admin1_name:
                     output_row["admin_level"] = 1
@@ -55,12 +64,6 @@ class HAPIOutput:
             output_row["reference_period_end"] = row["End Date"]
             output_row["dataset_hdx_id"] = dataset_id
             output_row["resource_hdx_id"] = resource_id
-            key = (
-                countryiso3,
-                output_row["provider_admin1_name"],
-                output_row["admin1_code"],
-                output_row["reference_period_end"],
-            )
             self._rows[key] = output_row
 
     def process(

@@ -98,8 +98,8 @@ class DatasetGenerator:
         return f"{countryname} Multidimensional Poverty Index"
 
     @staticmethod
-    def get_name(countryname: str) -> str:
-        return f"{countryname} MPI"
+    def get_name(countryiso3: str) -> str:
+        return f"{countryiso3} MPI"
 
     def generate_showcase(
         self,
@@ -109,7 +109,7 @@ class DatasetGenerator:
         url = self._showcase_links.get(countryiso3)
         if not url:
             return None
-        name = self.get_name(countryname)
+        name = self.get_name(countryiso3)
         title = self.get_title(countryname)
         showcase = Showcase(
             {
@@ -132,28 +132,29 @@ class DatasetGenerator:
         countryname: str,
         date_range: dict,
     ) -> Dataset | None:
-        if not standardised_rows:
+        if not standardised_rows and not standardised_trend_rows:
             return None
         title = self.get_title(countryname)
-        name = self.get_name(countryname)
+        name = self.get_name(countryiso3)
         dataset = self.generate_dataset_metadata(title, name)
         dataset.set_time_period(date_range["start"], date_range["end"])
         resource_descriptions = self._configuration["resource_descriptions"]
 
-        resource_name = f"{countryname} MPI and Partial Indices"
-        filename = f"{countryiso3}_mpi.csv"
-        success = self.generate_resource(
-            dataset,
-            resource_name,
-            resource_descriptions["standardised_mpi"],
-            (standardised_rows[key] for key in sorted(standardised_rows)),
-            folder,
-            filename,
-            p_coded=True,
-        )
-        if success is False:
-            logger.warning(f"{name} has no data!")
-            return None
+        if standardised_rows:
+            resource_name = f"{countryname} MPI and Partial Indices"
+            filename = f"{countryiso3}_mpi.csv"
+            success = self.generate_resource(
+                dataset,
+                resource_name,
+                resource_descriptions["standardised_mpi"],
+                (standardised_rows[key] for key in sorted(standardised_rows)),
+                folder,
+                filename,
+                p_coded=True,
+            )
+            if success is False:
+                logger.warning(f"{name} has no data!")
+                return None
 
         resource_name = f"{countryname} MPI Trends Over Time"
         filename = f"{countryiso3}_mpi_trends.csv"
