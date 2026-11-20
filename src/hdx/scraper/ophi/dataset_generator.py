@@ -95,7 +95,9 @@ class DatasetGenerator:
 
     @staticmethod
     def get_title(countryname: str) -> str:
-        return f"{countryname} Multidimensional Poverty Index"
+        if countryname == "Global":
+            return "Global Multidimensional Poverty Index (Global MPI)"
+        return f"{countryname} Global Multidimensional Poverty Index (Global MPI)"
 
     @staticmethod
     def get_name(countryiso3: str) -> str:
@@ -136,12 +138,13 @@ class DatasetGenerator:
             return None
         title = self.get_title(countryname)
         name = self.get_name(countryiso3)
+        prefix = "Global" if countryname == "Global" else f"{countryname} Global"
         dataset = self.generate_dataset_metadata(title, name)
         dataset.set_time_period(date_range["start"], date_range["end"])
         resource_descriptions = self._configuration["resource_descriptions"]
 
         if standardised_rows:
-            resource_name = f"{countryname} MPI and Partial Indices"
+            resource_name = f"{prefix} MPI and Partial Indices"
             filename = f"{countryiso3}_mpi.csv"
             success = self.generate_resource(
                 dataset,
@@ -156,7 +159,7 @@ class DatasetGenerator:
                 logger.warning(f"{name} has no data!")
                 return None
 
-        resource_name = f"{countryname} MPI Trends Over Time"
+        resource_name = f"{prefix} MPI Trends Over Time"
         filename = f"{countryiso3}_mpi_trends.csv"
         success = self.generate_resource(
             dataset,

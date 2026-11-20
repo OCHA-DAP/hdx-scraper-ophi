@@ -94,7 +94,8 @@ class Pipeline:
     def set_mpi(cls, inheaders: tuple[str], inrow: dict, row: dict) -> None:
         for i, inheader in enumerate(inheaders):
             header = cls.headers[i]
-            row[header] = number_format(inrow[inheader], format="%.4f")
+            decimals = 3 if header == "MPI" else 2
+            row[header] = number_format(inrow[inheader], format=f"%.{decimals}f")
 
     def read_mpi_national_data(
         self, path: str, format: str, sheet: str, headers: list[str]

@@ -279,7 +279,7 @@ class TestOPHI:
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
                     ],
-                    "title": "Global Multidimensional Poverty Index",
+                    "title": "Global Multidimensional Poverty Index (Global MPI)",
                 }
                 assert dataset.get_resources() == [
                     {
@@ -440,7 +440,7 @@ class TestOPHI:
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
                     ],
-                    "title": "Afghanistan Multidimensional Poverty Index",
+                    "title": "Afghanistan Global Multidimensional Poverty Index (Global MPI)",
                 }
                 assert dataset.get_resources() == [
                     {
@@ -450,7 +450,7 @@ class TestOPHI:
                         "experience deprivations in each of the indicators by admin "
                         "one unit.",
                         "format": "csv",
-                        "name": "Afghanistan MPI and Partial Indices",
+                        "name": "Afghanistan Global MPI and Partial Indices",
                         "p_coded": True,
                     },
                     {
@@ -460,7 +460,7 @@ class TestOPHI:
                         "are MPI poor and experience deprivations in each of the "
                         "indicators by admin one unit.",
                         "format": "csv",
-                        "name": "Afghanistan MPI Trends Over Time",
+                        "name": "Afghanistan Global MPI Trends Over Time",
                         "p_coded": True,
                     },
                 ]
@@ -485,7 +485,7 @@ class TestOPHI:
                     date_ranges[countryiso3],
                 )
                 assert [x["name"] for x in dataset.get_resources()] == [
-                    "Bosnia and Herzegovina MPI Trends Over Time"
+                    "Bosnia and Herzegovina Global MPI Trends Over Time"
                 ]
 
                 countryiso3 = "AFG"
@@ -540,6 +540,6 @@ class TestOPHI:
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
                     ],
-                    "title": "Afghanistan Multidimensional Poverty Index",
+                    "title": "Afghanistan Global Multidimensional Poverty Index (Global MPI)",
                     "url": "https://ophi.org.uk/media/45972/download",
                 }
