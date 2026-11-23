@@ -1,5 +1,6 @@
 import logging
 from collections.abc import Iterable
+from typing import ClassVar
 
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class DatasetGenerator:
-    tags = [
+    tags: ClassVar[list[str]] = [
         "development",
         "education",
         "health",
@@ -54,7 +55,7 @@ class DatasetGenerator:
         rows: Iterable,
         folder: str,
         filename: str,
-        p_coded: bool = None,
+        p_coded: bool | None = None,
     ) -> bool:
         resourcedata = {
             "name": resource_name,
@@ -63,7 +64,7 @@ class DatasetGenerator:
         if p_coded:
             resourcedata["p_coded"] = p_coded
 
-        success, results = dataset.generate_resource(
+        success, _results = dataset.generate_resource(
             folder,
             filename,
             rows,

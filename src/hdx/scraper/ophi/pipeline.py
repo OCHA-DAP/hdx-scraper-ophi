@@ -56,10 +56,10 @@ class Pipeline:
                     "end": end_date,
                 }
             else:
-                if start_date < current_date_range["start"]:
-                    current_date_range["start"] = start_date
-                if end_date > current_date_range["end"]:
-                    current_date_range["end"] = end_date
+                current_date_range["start"] = min(
+                    current_date_range["start"], start_date
+                )
+                current_date_range["end"] = max(current_date_range["end"], end_date)
 
         update_date_range(countryiso3)
         update_date_range("global")
