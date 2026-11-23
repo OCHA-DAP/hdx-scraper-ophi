@@ -11,7 +11,7 @@ name = "hdx-scraper-ophi"
 dynamic = ["version"]
 requires-python = ">=3.13"
 dependencies = [
-  "hdx-python-api>=6.7.9",
+  "hdx-python-api>=6.8.0",
   "hdx-python-country>=4.3.1",
   "hdx-python-utilities>=4.2.7",
 ]
@@ -28,7 +28,7 @@ dev = [
   "pytest-check",
   "pytest-cov",
   "pre-commit",
-  "ruff==0.14.14",
+  "ruff==0.17.3",
 ]
 
 [project.scripts]
@@ -77,9 +77,11 @@ ignore = [
 known-local-folder = ["hdx.scraper.ophi"]
 known-third-party = [
     "hdx.api",
-    "hdx.data",
-    "hdx.facades",
     "hdx.location",
+    "hdx.data",
+    "hdx.database",
+    "hdx.facades",
+    "hdx.scraper",
     "hdx.utilities",
 ]
 
