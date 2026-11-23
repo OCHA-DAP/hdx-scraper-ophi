@@ -73,455 +73,471 @@ class TestOPHI:
         fixtures_dir,
         input_dir,
     ):
-        with temp_dir(
-            "TestOPHI",
-            delete_on_success=True,
-            delete_on_failure=False,
-        ) as tempdir:
-            with Download(user_agent="test") as downloader:
-                retriever = Retrieve(
-                    downloader,
-                    tempdir,
-                    input_dir,
-                    tempdir,
-                    save=False,
-                    use_saved=True,
-                )
-                adminone = AdminLevel(
-                    admin_config=configuration["admin1"],
-                    admin_level=1,
-                    retriever=retriever,
-                )
-                adminone.setup_from_url()
+        with (
+            temp_dir(
+                "TestOPHI",
+                delete_on_success=True,
+                delete_on_failure=False,
+            ) as tempdir,
+            Download(user_agent="test") as downloader,
+        ):
+            retriever = Retrieve(
+                downloader,
+                tempdir,
+                input_dir,
+                tempdir,
+                save=False,
+                use_saved=True,
+            )
+            adminone = AdminLevel(
+                admin_config=configuration["admin1"],
+                admin_level=1,
+                retriever=retriever,
+            )
+            adminone.setup_from_url()
 
-                pipeline = Pipeline(configuration, retriever, adminone)
-                mpi_national_path, mpi_subnational_path, trend_path = pipeline.process()
-                dataset_generator = DatasetGenerator(
-                    configuration,
-                    mpi_national_path,
-                    mpi_subnational_path,
-                    trend_path,
-                )
-                data_dictionary = json.dumps(
-                    configuration["data_dictionary"], separators=(",", ":")
-                )
+            pipeline = Pipeline(configuration, retriever, adminone)
+            mpi_national_path, mpi_subnational_path, trend_path = pipeline.process()
+            dataset_generator = DatasetGenerator(
+                configuration,
+                mpi_national_path,
+                mpi_subnational_path,
+                trend_path,
+            )
+            data_dictionary = json.dumps(
+                configuration["data_dictionary"], separators=(",", ":")
+            )
 
-                standardised_global = pipeline.get_standardised_global()
-                standardised_global_trend = pipeline.get_standardised_global_trend()
-                standardised_countries = pipeline.get_standardised_countries()
-                standardised_countries_trend = (
-                    pipeline.get_standardised_countries_trend()
-                )
-                date_ranges = pipeline.get_date_ranges()
-                dataset = dataset_generator.generate_global_dataset(
-                    tempdir,
-                    standardised_global,
-                    standardised_global_trend,
-                    date_ranges["global"],
-                )
-                countryiso3s = list(standardised_countries.keys())
-                assert sorted(countryiso3s) == [
-                    "AFG",
-                    "AGO",
-                    "ALB",
-                    "ARG",
-                    "ARM",
-                    "BDI",
-                    "BEN",
-                    "BFA",
-                    "BGD",
-                    "BIH",
-                    "BLZ",
-                    "BOL",
-                    "BRA",
-                    "BRB",
-                    "BTN",
-                    "BWA",
-                    "CAF",
-                    "CHN",
-                    "CIV",
-                    "CMR",
-                    "COD",
-                    "COG",
-                    "COL",
-                    "COM",
-                    "CRI",
-                    "CUB",
-                    "DOM",
-                    "DZA",
-                    "ECU",
-                    "EGY",
-                    "ETH",
-                    "FJI",
-                    "GAB",
-                    "GEO",
-                    "GHA",
-                    "GIN",
-                    "GMB",
-                    "GNB",
-                    "GTM",
-                    "GUY",
-                    "HND",
-                    "HTI",
-                    "IDN",
-                    "IND",
-                    "IRQ",
-                    "JAM",
-                    "JOR",
-                    "KAZ",
-                    "KEN",
-                    "KGZ",
-                    "KHM",
-                    "KIR",
-                    "LAO",
-                    "LBR",
-                    "LBY",
-                    "LCA",
-                    "LKA",
-                    "LSO",
-                    "MAR",
-                    "MDA",
-                    "MDG",
-                    "MDV",
-                    "MEX",
-                    "MKD",
-                    "MLI",
-                    "MMR",
-                    "MNE",
-                    "MNG",
-                    "MOZ",
-                    "MRT",
-                    "MWI",
-                    "NAM",
-                    "NER",
-                    "NGA",
-                    "NIC",
-                    "NPL",
-                    "PAK",
-                    "PER",
-                    "PHL",
-                    "PNG",
-                    "PRY",
-                    "PSE",
-                    "RWA",
-                    "SDN",
-                    "SEN",
-                    "SLE",
-                    "SLV",
-                    "SRB",
-                    "STP",
-                    "SUR",
-                    "SWZ",
-                    "SYC",
-                    "TCD",
-                    "TGO",
-                    "THA",
-                    "TJK",
-                    "TKM",
-                    "TLS",
-                    "TON",
-                    "TTO",
-                    "TUN",
-                    "TUV",
-                    "TZA",
-                    "UGA",
-                    "UKR",
-                    "UZB",
-                    "VNM",
-                    "WSM",
-                    "YEM",
-                    "ZAF",
-                    "ZMB",
-                    "ZWE",
-                ]
-                assert dataset == {
-                    "data_update_frequency": "-2",
-                    "dataset_date": "[2001-01-01T00:00:00 TO 2023-12-31T23:59:59]",
-                    "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
-                    "name": "global-mpi",
-                    "owner_org": "00547685-9ded-4d69-9ca5-47d5278ead7c",
-                    "subnational": "1",
-                    "tags": [
-                        {
-                            "name": "development",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "education",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "health",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "indicators",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "mortality",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "nutrition",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "poverty",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "socioeconomics",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "sustainable development goals-sdg",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "water sanitation and hygiene-wash",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                    ],
-                    "title": "Global Multidimensional Poverty Index",
-                }
-                assert dataset.get_resources() == [
+            standardised_global = pipeline.get_standardised_global()
+            standardised_global_trend = pipeline.get_standardised_global_trend()
+            standardised_countries = pipeline.get_standardised_countries()
+            standardised_countries_trend = pipeline.get_standardised_countries_trend()
+            date_ranges = pipeline.get_date_ranges()
+            dataset = dataset_generator.generate_global_dataset(
+                tempdir,
+                standardised_global,
+                standardised_global_trend,
+                date_ranges["global"],
+            )
+            countryiso3s = list(standardised_countries.keys())
+            assert sorted(countryiso3s) == [
+                "AFG",
+                "AGO",
+                "ALB",
+                "ARG",
+                "ARM",
+                "AZE",
+                "BDI",
+                "BEN",
+                "BFA",
+                "BGD",
+                "BLZ",
+                "BOL",
+                "BRA",
+                "BTN",
+                "BWA",
+                "CAF",
+                "CHN",
+                "CIV",
+                "CMR",
+                "COD",
+                "COG",
+                "COL",
+                "COM",
+                "CRI",
+                "CUB",
+                "DOM",
+                "DZA",
+                "ECU",
+                "EGY",
+                "ETH",
+                "FJI",
+                "GAB",
+                "GEO",
+                "GHA",
+                "GIN",
+                "GMB",
+                "GNB",
+                "GTM",
+                "GUY",
+                "HND",
+                "HTI",
+                "IDN",
+                "IND",
+                "IRQ",
+                "JAM",
+                "JOR",
+                "KAZ",
+                "KEN",
+                "KGZ",
+                "KHM",
+                "KIR",
+                "LAO",
+                "LBR",
+                "LBY",
+                "LKA",
+                "LSO",
+                "MAR",
+                "MDG",
+                "MDV",
+                "MEX",
+                "MKD",
+                "MLI",
+                "MMR",
+                "MNE",
+                "MNG",
+                "MOZ",
+                "MRT",
+                "MWI",
+                "NER",
+                "NGA",
+                "NPL",
+                "NRU",
+                "PAK",
+                "PER",
+                "PHL",
+                "PNG",
+                "PRY",
+                "PSE",
+                "RWA",
+                "SDN",
+                "SEN",
+                "SLE",
+                "SLV",
+                "SRB",
+                "STP",
+                "SUR",
+                "SWZ",
+                "SYC",
+                "TCD",
+                "TGO",
+                "THA",
+                "TJK",
+                "TKM",
+                "TLS",
+                "TON",
+                "TTO",
+                "TUN",
+                "TUV",
+                "TZA",
+                "UGA",
+                "UZB",
+                "VNM",
+                "VUT",
+                "WSM",
+                "YEM",
+                "ZAF",
+                "ZMB",
+                "ZWE",
+            ]
+            assert dataset == {
+                "data_update_frequency": "-2",
+                "dataset_date": "[2001-01-01T00:00:00 TO 2025-12-31T23:59:59]",
+                "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
+                "name": "global-mpi",
+                "owner_org": "00547685-9ded-4d69-9ca5-47d5278ead7c",
+                "subnational": "1",
+                "tags": [
                     {
-                        "description": "This resource contains standardised MPI estimates by "
-                        "first-level administrative unit (e.g. state, province) and "
-                        "also shows the proportion of people who are MPI poor and "
-                        "experience deprivations in each of the indicators by admin "
-                        "one unit.",
-                        "format": "csv",
-                        "name": "Global MPI and Partial Indices",
-                        "p_coded": True,
-                        "hdx_data_dictionary": data_dictionary,
+                        "name": "development",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                     },
                     {
-                        "description": "This resource contains standardised MPI estimates and their "
-                        "changes over time by first-level administrative unit (e.g. "
-                        "state, province) and also shows the proportion of people who "
-                        "are MPI poor and experience deprivations in each of the "
-                        "indicators by admin one unit.",
-                        "format": "csv",
-                        "name": "Global MPI Trends Over Time",
-                        "p_coded": True,
-                        "hdx_data_dictionary": data_dictionary,
+                        "name": "education",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                     },
                     {
-                        "description": "This table shows the MPI and its partial indices",
-                        "format": "xlsx",
-                        "name": "MPI and Partial Indices National Database",
+                        "name": "health",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                     },
                     {
-                        "description": "This table shows the MPI and its partial indices "
-                        "disaggregated by subnational regions",
-                        "format": "xlsx",
-                        "name": "MPI and Partial Indices Subnational Database",
+                        "name": "indicators",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                     },
                     {
-                        "description": "This table shows global mpi harmonized level estimates and "
-                        "their changes over time",
-                        "format": "xlsx",
-                        "name": "Trends Over Time MPI Database",
+                        "name": "mortality",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                     },
-                ]
-                for filename in ("global_mpi.csv", "global_mpi_trends.csv"):
-                    expected_file = join(fixtures_dir, filename)
-                    actual_file = join(tempdir, filename)
-                    assert_files_same(expected_file, actual_file)
-
-                hapi_output = HAPIOutput(
-                    configuration,
-                    adminone,
-                    standardised_global,
-                    standardised_global_trend,
-                )
-                rows = hapi_output.process("12", ["3456", "7890"])
-                hapi_dataset_generator = HAPIDatasetGenerator(configuration, rows)
-                dataset = hapi_dataset_generator.generate_poverty_rate_dataset(tempdir)
-                assert dataset == {
-                    "data_update_frequency": "365",
-                    "dataset_preview": "no_preview",
-                    "dataset_source": "Oxford Poverty & Human Development Initiative",
-                    "license_id": "other-pd-nr",
-                    "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
-                    "name": "hdx-hapi-poverty-rate",
-                    "owner_org": "40d10ece-49de-4791-9aed-e164f1d16dd1",
-                    "subnational": "1",
-                    "tags": [
-                        {
-                            "name": "education",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "health",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "indicators",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "poverty",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                    ],
-                    "title": "HDX HAPI - Food Security, Nutrition & Poverty: Poverty Rate",
-                }
-                assert dataset.get_resources()[0] == {
-                    "name": "Global Food Security, Nutrition & Poverty: Poverty Rate",
-                    "description": "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/food_security_nutrition_and_poverty/#poverty-rate) for more information",
-                    "p_coded": True,
+                    {
+                        "name": "nutrition",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "poverty",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "socioeconomics",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "sustainable development goals-sdg",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "water sanitation and hygiene-wash",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                ],
+                "title": "Global Multidimensional Poverty Index (Global MPI)",
+            }
+            assert dataset.get_resources() == [
+                {
+                    "description": "This resource contains standardised MPI estimates by "
+                    "first-level administrative unit (e.g. state, province) and "
+                    "also shows the proportion of people who are MPI poor and "
+                    "experience deprivations in each of the indicators by admin "
+                    "one unit.",
                     "format": "csv",
-                    "dataset_preview_enabled": "False",
-                }
-
-                filename = "hdx_hapi_poverty_rate_global.csv"
+                    "name": "Global MPI and Partial Indices",
+                    "p_coded": True,
+                    "hdx_data_dictionary": data_dictionary,
+                },
+                {
+                    "description": "This resource contains standardised MPI estimates and their "
+                    "changes over time by first-level administrative unit (e.g. "
+                    "state, province) and also shows the proportion of people who "
+                    "are MPI poor and experience deprivations in each of the "
+                    "indicators by admin one unit.",
+                    "format": "csv",
+                    "name": "Global MPI Trends Over Time",
+                    "p_coded": True,
+                    "hdx_data_dictionary": data_dictionary,
+                },
+                {
+                    "description": "This table shows the MPI and its partial indices",
+                    "format": "xlsx",
+                    "name": "MPI and Partial Indices National Database",
+                },
+                {
+                    "description": "This table shows the MPI and its partial indices "
+                    "disaggregated by subnational regions",
+                    "format": "xlsx",
+                    "name": "MPI and Partial Indices Subnational Database",
+                },
+                {
+                    "description": "This table shows global mpi harmonized level estimates and "
+                    "their changes over time",
+                    "format": "xlsx",
+                    "name": "Trends Over Time MPI Database",
+                },
+            ]
+            for filename in ("global_mpi.csv", "global_mpi_trends.csv"):
                 expected_file = join(fixtures_dir, filename)
                 actual_file = join(tempdir, filename)
                 assert_files_same(expected_file, actual_file)
 
-                countryiso3 = "AFG"
-                countryname = Country.get_country_name_from_iso3(countryiso3)
-                standardised_country = standardised_countries[countryiso3]
-                standardised_country_trend = standardised_countries_trend.get(
-                    countryiso3
-                )
-                dataset = dataset_generator.generate_dataset(
-                    tempdir,
-                    standardised_country,
-                    standardised_country_trend,
-                    countryiso3,
-                    countryname,
-                    date_ranges[countryiso3],
-                )
-                assert dataset == {
-                    "dataset_date": "[2015-01-01T00:00:00 TO 2023-12-31T23:59:59]",
-                    "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
-                    "name": "afghanistan-mpi",
-                    "owner_org": "00547685-9ded-4d69-9ca5-47d5278ead7c",
-                    "subnational": "1",
-                    "tags": [
-                        {
-                            "name": "development",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "education",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "health",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "indicators",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "mortality",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "nutrition",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "poverty",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "socioeconomics",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "sustainable development goals-sdg",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "water sanitation and hygiene-wash",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                    ],
-                    "title": "Afghanistan Multidimensional Poverty Index",
-                }
-                assert dataset.get_resources() == [
+            hapi_output = HAPIOutput(
+                configuration,
+                adminone,
+                standardised_global,
+                standardised_global_trend,
+            )
+            rows = hapi_output.process("12", ["3456", "7890"])
+            hapi_dataset_generator = HAPIDatasetGenerator(configuration, rows)
+            dataset = hapi_dataset_generator.generate_poverty_rate_dataset(tempdir)
+            assert dataset == {
+                "data_update_frequency": "365",
+                "dataset_preview": "no_preview",
+                "dataset_source": "Oxford Poverty & Human Development Initiative",
+                "license_id": "other-pd-nr",
+                "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
+                "name": "hdx-hapi-poverty-rate",
+                "owner_org": "40d10ece-49de-4791-9aed-e164f1d16dd1",
+                "subnational": "1",
+                "tags": [
                     {
-                        "description": "This resource contains standardised MPI estimates by "
-                        "first-level administrative unit (e.g. state, province) and "
-                        "also shows the proportion of people who are MPI poor and "
-                        "experience deprivations in each of the indicators by admin "
-                        "one unit.",
-                        "format": "csv",
-                        "name": "Afghanistan MPI and Partial Indices",
-                        "p_coded": True,
+                        "name": "education",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                     },
                     {
-                        "description": "This resource contains standardised MPI estimates and their "
-                        "changes over time by first-level administrative unit (e.g. "
-                        "state, province) and also shows the proportion of people who "
-                        "are MPI poor and experience deprivations in each of the "
-                        "indicators by admin one unit.",
-                        "format": "csv",
-                        "name": "Afghanistan MPI Trends Over Time",
-                        "p_coded": True,
+                        "name": "health",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                     },
-                ]
-                for filename in ("AFG_mpi.csv", "AFG_mpi_trends.csv"):
-                    expected_file = join(fixtures_dir, filename)
-                    actual_file = join(tempdir, filename)
-                    assert_files_same(expected_file, actual_file)
-                dataset_generator.load_showcase_links(retriever)
-                showcase = dataset_generator.generate_showcase(countryiso3, countryname)
-                assert showcase == {
-                    "image_url": "https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-ophi/main/ophi_mpi.jpg",
-                    "name": "afghanistan-mpi-showcase",
-                    "notes": "The visual contains sub-national multidimensional poverty data from "
-                    "the country briefs published by the Oxford Poverty and Human "
-                    "Development Initiative (OPHI), University of Oxford.",
-                    "tags": [
-                        {
-                            "name": "development",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "education",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "health",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "indicators",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "mortality",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "nutrition",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "poverty",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "socioeconomics",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "sustainable development goals-sdg",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                        {
-                            "name": "water sanitation and hygiene-wash",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
-                    ],
-                    "title": "Afghanistan Multidimensional Poverty Index",
-                    "url": "https://ophi.org.uk/media/45972/download",
-                }
+                    {
+                        "name": "indicators",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "poverty",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                ],
+                "title": "HDX HAPI - Food Security, Nutrition & Poverty: Poverty Rate",
+            }
+            assert dataset.get_resources()[0] == {
+                "name": "Global Food Security, Nutrition & Poverty: Poverty Rate",
+                "description": "Poverty Rate data from HDX HAPI, please see [the documentation](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/food_security_nutrition_and_poverty/#poverty-rate) for more information",
+                "p_coded": True,
+                "format": "csv",
+                "dataset_preview_enabled": "False",
+            }
+
+            filename = "hdx_hapi_poverty_rate_global.csv"
+            expected_file = join(fixtures_dir, filename)
+            actual_file = join(tempdir, filename)
+            assert_files_same(expected_file, actual_file)
+
+            countryiso3 = "AFG"
+            countryname = Country.get_country_name_from_iso3(countryiso3)
+            standardised_country = standardised_countries[countryiso3]
+            standardised_country_trend = standardised_countries_trend.get(countryiso3)
+            dataset = dataset_generator.generate_dataset(
+                tempdir,
+                standardised_country,
+                standardised_country_trend,
+                countryiso3,
+                countryname,
+                date_ranges[countryiso3],
+            )
+            assert dataset == {
+                "dataset_date": "[2015-01-01T00:00:00 TO 2023-12-31T23:59:59]",
+                "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
+                "name": "afg-mpi",
+                "owner_org": "00547685-9ded-4d69-9ca5-47d5278ead7c",
+                "subnational": "1",
+                "tags": [
+                    {
+                        "name": "development",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "education",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "health",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "indicators",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "mortality",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "nutrition",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "poverty",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "socioeconomics",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "sustainable development goals-sdg",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "water sanitation and hygiene-wash",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                ],
+                "title": "Afghanistan Global Multidimensional Poverty Index (Global MPI)",
+            }
+            assert dataset.get_resources() == [
+                {
+                    "description": "This resource contains standardised MPI estimates by "
+                    "first-level administrative unit (e.g. state, province) and "
+                    "also shows the proportion of people who are MPI poor and "
+                    "experience deprivations in each of the indicators by admin "
+                    "one unit.",
+                    "format": "csv",
+                    "name": "Afghanistan Global MPI and Partial Indices",
+                    "p_coded": True,
+                },
+                {
+                    "description": "This resource contains standardised MPI estimates and their "
+                    "changes over time by first-level administrative unit (e.g. "
+                    "state, province) and also shows the proportion of people who "
+                    "are MPI poor and experience deprivations in each of the "
+                    "indicators by admin one unit.",
+                    "format": "csv",
+                    "name": "Afghanistan Global MPI Trends Over Time",
+                    "p_coded": True,
+                },
+            ]
+            for filename in ("AFG_mpi.csv", "AFG_mpi_trends.csv"):
+                expected_file = join(fixtures_dir, filename)
+                actual_file = join(tempdir, filename)
+                assert_files_same(expected_file, actual_file)
+
+            # BIH is in the trends table but not the national/subnational tables
+            trend_only = sorted(
+                set(standardised_countries_trend) - set(standardised_countries)
+            )
+            assert trend_only == ["BIH", "MDA", "NAM", "NIC", "UKR"]
+            countryiso3 = "BIH"
+            countryname = Country.get_country_name_from_iso3(countryiso3)
+            dataset = dataset_generator.generate_dataset(
+                tempdir,
+                {},
+                standardised_countries_trend[countryiso3],
+                countryiso3,
+                countryname,
+                date_ranges[countryiso3],
+            )
+            assert [x["name"] for x in dataset.get_resources()] == [
+                "Bosnia and Herzegovina Global MPI Trends Over Time"
+            ]
+
+            countryiso3 = "AFG"
+            countryname = Country.get_country_name_from_iso3(countryiso3)
+            dataset_generator.load_showcase_links(retriever)
+            showcase = dataset_generator.generate_showcase(countryiso3, countryname)
+            assert showcase == {
+                "image_url": "https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-ophi/main/ophi_mpi.jpg",
+                "name": "afg-mpi-showcase",
+                "notes": "The visual contains sub-national multidimensional poverty data from "
+                "the country briefs published by the Oxford Poverty and Human "
+                "Development Initiative (OPHI), University of Oxford.",
+                "tags": [
+                    {
+                        "name": "development",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "education",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "health",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "indicators",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "mortality",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "nutrition",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "poverty",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "socioeconomics",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "sustainable development goals-sdg",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                    {
+                        "name": "water sanitation and hygiene-wash",
+                        "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+                    },
+                ],
+                "title": "Afghanistan Global Multidimensional Poverty Index (Global MPI)",
+                "url": "https://ophi.org.uk/media/45972/download",
+            }

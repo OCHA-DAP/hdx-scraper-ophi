@@ -56,10 +56,10 @@ class Pipeline:
                     "end": end_date,
                 }
             else:
-                if start_date < current_date_range["start"]:
-                    current_date_range["start"] = start_date
-                if end_date > current_date_range["end"]:
-                    current_date_range["end"] = end_date
+                current_date_range["start"] = min(
+                    current_date_range["start"], start_date
+                )
+                current_date_range["end"] = max(current_date_range["end"], end_date)
 
         update_date_range(countryiso3)
         update_date_range("global")
@@ -94,7 +94,8 @@ class Pipeline:
     def set_mpi(cls, inheaders: tuple[str], inrow: dict, row: dict) -> None:
         for i, inheader in enumerate(inheaders):
             header = cls.headers[i]
-            row[header] = number_format(inrow[inheader], format="%.4f")
+            decimals = 3 if header == "MPI" else 2
+            row[header] = number_format(inrow[inheader], format=f"%.{decimals}f")
 
     def read_mpi_national_data(
         self, path: str, format: str, sheet: str, headers: list[str]
@@ -103,8 +104,8 @@ class Pipeline:
             "Multidimensional poverty Multidimensional Poverty Index (MPI = H*A) Range 0 to 1",
             "Multidimensional poverty Headcount ratio: Population in multidimensional poverty (H) % Population",
             "Multidimensional poverty Intensity of deprivation among the poor (A) Average % of weighted deprivations",
-            "Multidimensional poverty Vulnerable to poverty (who experience 20-33.32% intensity of deprivations) % Population",
-            "Multidimensional poverty In severe poverty (severity 50% or higher) % Population",
+            "Multidimensional poverty Vulnerable to poverty (who experience 20-33.32% of deprivation) % Population",
+            "Multidimensional poverty In severe poverty (who experience 50% or more deprivations) % Population",
         )
         _, iterator = self._retriever.downloader.get_tabular_rows(
             path,
@@ -143,8 +144,8 @@ class Pipeline:
             "Multidimensional poverty by region Multidimensional Poverty Index (MPI = H*A) Range 0 to 1",
             "Multidimensional poverty by region Headcount ratio: Population in multidimensional poverty (H) % Population",
             "Multidimensional poverty by region Intensity of deprivation among the poor (A) Average % of weighted deprivations",
-            "Multidimensional poverty by region Vulnerable to poverty % Population",
-            "Multidimensional poverty by region In severe poverty % Population",
+            "Multidimensional poverty by region Vulnerable to poverty (who experience 20-33.32% of deprivation) % Population",
+            "Multidimensional poverty by region In severe poverty (who experience 50% or more deprivations) % Population",
         )
         _, iterator = self._retriever.downloader.get_tabular_rows(
             path,

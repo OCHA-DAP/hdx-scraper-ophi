@@ -87,7 +87,7 @@ For the script to run, you will need to have a file called
  *user_agent_lookup*.
 
  Alternatively, you can set up environment variables: `USER_AGENT`, `HDX_KEY`,
-`HDX_SITE`, `EXTRA_PARAMS`, `TEMP_DIR`, and `LOG_FILE_ONLY`.
+`HDX_SITE`, `TEMP_DIR`, and `LOG_FILE_ONLY`.
 
 To run, execute:
 
